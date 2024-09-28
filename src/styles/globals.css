@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Setting up custom root variables */
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 224,247,250;
+  --navbar-height: 52px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 223, 245, 255;
+    --background-end-rgb: 240, 255, 255;
+  }
+}
+
+/* Applying background gradients using cyan-100 for a soft and seamless background */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--background-start-rgb)), /* cyan-100 */
+    rgb(var(--background-end-rgb)) /* cyan-50 */
+  );
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  font-family: sans-serif;
+}
+
+/* Loading indicator styles */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading::after {
+  content: 'Loading...';
+  font-size: 1.5rem;
+  color: rgb(var(--foreground-rgb));
+}
+
+/* Autonomous flip animation for the image */
+.flip-container {
+  perspective: 1000px;
+}
+
+.flip-container img {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  border-radius: 30px;
+  transform: rotateY(0deg);
+  animation: flip 10s linear infinite;
+}
+
+@keyframes flip {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+/* Responsive text sizes and padding */
+@media (max-width: 640px) {
+  .main {
+    padding-top: calc(var(--navbar-height));
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  body {
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+  .main {
+    padding-top: calc(var(--navbar-height));
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  body {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .main {
+    padding-top: calc(var(--navbar-height));
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  body {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main {
+    padding-top: calc(var(--navbar-height));
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  body {
+    font-size: 1.125rem;
+  }
+}

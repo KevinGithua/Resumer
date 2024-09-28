@@ -1,0 +1,90 @@
+{
+  "services": [
+    {
+      "title": "Resume Writing",
+      "description": "Get a professionally crafted resume tailored to your career goals.",
+      "pricing": [
+        { "category": "0 Years Experience", "price": 5 },
+        { "category": "1-2 Years Experience", "price": 10 },
+        { "category": "3-5 Years Experience", "price": 15 },
+        { "category": "Over 5 Years", "price": 20 }
+      ],
+      "fields": [
+        { "name": "fullName", "type": "text", "label": "Full Name", "required": true },
+        { "name": "phone", "type": "text", "label": "Phone No", "required": true },
+        { "name": "email", "type": "email", "label": "Email", "required": true },
+        { "name": "address", "type": "text", "label": "Address", "required": true },
+        { "name": "highSchool", "type": "text", "label": "High School", "required": true },
+        { "name": "college", "type": "text", "label": "College", "required": true },
+        { "name": "degree", "type": "text", "label": "Degree", "required": true },
+        { "name": "masters", "type": "text", "label": "Masters", "required": false },
+        { "name": "certifications", "type": "text", "label": "Certifications", "required": false },
+        { "name": "currentJobOrganization", "type": "text", "label": "Current Job Organization", "required": true },
+        { "name": "startMonthYear", "type": "text", "label": "Start Month and Year", "required": true },
+        { "name": "endMonthYear", "type": "text", "label": "End Month and Year", "required": true },
+        { "name": "position", "type": "text", "label": "Position", "required": true },
+        { "name": "roles", "type": "textarea", "label": "Roles", "required": true },
+        { "name": "skills", "type": "text", "label": "Skills", "required": true },
+        { "name": "references", "type": "textarea", "label": "References", "required": true }
+      ]
+    },
+    {
+      "title": "Resume Revamping",
+      "description": "Update and enhance your existing resume to make it stand out.",
+      "pricing": [
+        { "category": "Standard Revamping", "price": 10 },
+        { "category": "Enhanced Revamping with Keyword Optimization", "price": 15 }
+      ],
+      "fields": [
+        { "name": "existingResume", "type": "file", "label": "Upload Existing Resume", "required": true },
+        { "name": "updateContact", "type": "text", "label": "Update Contact", "required": true },
+        { "name": "updateEducation", "type": "textarea", "label": "Update Education", "required": true },
+        { "name": "newExperiences", "type": "textarea", "label": "New Experiences", "required": true },
+        { "name": "newSkills", "type": "textarea", "label": "New Skills", "required": true },
+        { "name": "newReferences", "type": "textarea", "label": "New References", "required": true },
+        { "name": "jobApplyingFor", "type": "text", "label": "Job Applying For", "required": true }
+      ]
+    },
+    {
+      "title": "Cover Letter Writing",
+      "description": "Create a compelling cover letter that complements your resume.",
+      "pricing": [
+        { "category": "Cover Letter Only", "price": 5 },
+        { "category": "Cover Letter revamping", "price": 5 }
+      ],
+      "fields": [
+        { "name": "existingCoverLetter", "type": "file", "label": "Upload Existing Cover Letter", "required": false },
+        { "name": "jobApplyingFor", "type": "text", "label": "Job Applying For", "required": true },
+        { "name": "companyApplyingTo", "type": "text", "label": "Company Applying To", "required": true },
+        { "name": "existingResume", "type": "file", "label": "Upload Existing Resume", "required": true }
+      ]
+    },
+    {
+      "title": "LinkedIn Profile Optimization",
+      "description": "Enhance your LinkedIn profile to attract recruiters and job opportunities.",
+      "pricing": [
+        { "category": "Profile Creation", "price": 1 },
+        { "category": "Optimization", "price": 10 }
+      ],
+      "fields": [
+        { "name": "linkedInUsername", "type": "text", "label": "LinkedIn Username", "required": true },
+        { "name": "linkedInPassword", "type": "password", "label": "LinkedIn Password", "required": true },
+        { "name": "jobApplyingFor", "type": "text", "label": "Job Applying For", "required": true }
+      ]
+    },
+    {
+      "title": "Job Application Assistance",
+      "description": "We will diligently make job applications on your behalf.",
+      "pricing": [
+        { "category": "Entry Level", "price": 5 },
+        { "category": "Expert Level", "price": 10 },
+        { "category": "Managerial Level", "price": 15 }
+      ],
+      "fields": [
+        { "name": "resume", "type": "file", "label": "Upload Resume", "required": true },
+        { "name": "jobLink", "type": "text", "label": "Provide Job Link", "required": true }
+      ]
+    }
+  ]
+}
+  
