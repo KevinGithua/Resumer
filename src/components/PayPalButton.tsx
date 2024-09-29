@@ -40,9 +40,13 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
         }),
       });
 
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.message || 'Failed to update order');
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.message || 'Failed to update order');
+        }
       }
     } catch (error) {
       console.error('Error updating order:', error);

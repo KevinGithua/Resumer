@@ -8,7 +8,7 @@ const consumerKey = process.env.MPESA_CONSUMER_KEY!;
 const consumerSecret = process.env.MPESA_CONSUMER_SECRET!;
 const shortCode = process.env.MPESA_SHORT_CODE!;
 const passKey = process.env.MPESA_PASSKEY!;
-const callbackUrl = process.env.MPESA_CALLBACK_URL!;
+const callbackUrl = process.env.NEXT_PUBLIC_MPESA_CALLBACK_URL!;
 
 // Helper function to generate M-Pesa access token
 const getMpesaAccessToken = async () => {

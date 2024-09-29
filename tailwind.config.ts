@@ -4,7 +4,7 @@ const config: Config = {
   content: [
     './src/app/**/*.{js,ts,jsx,tsx}',
     './src/components/**/*.{js,ts,jsx,tsx}',
-    './src/styles/**/*.{css}',
+    './src/styles/**/*.css',
   ],
   darkMode: 'media', // Dark mode based on user's system preference
   theme: {

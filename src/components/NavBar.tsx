@@ -69,7 +69,7 @@ const NavBar: React.FC = () => {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [menuOpen]);
+  }, [menuOpen, closeMenu]); // <-- Include closeMenu here
 
   // Render auth links based on user authentication state
   const authLinks = useMemo(() => (

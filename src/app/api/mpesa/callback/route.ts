@@ -9,7 +9,9 @@ export async function POST(req: NextRequest) {
 
     console.log('Received callback:', body);
 
-    const { Body: { stkCallback } = {} } = body;
+    // Provide default values while destructuring to prevent the error
+    const { Body: { stkCallback } = { stkCallback: null } } = body;
+    
     if (!stkCallback) {
       throw new Error('stkCallback is undefined');
     }
