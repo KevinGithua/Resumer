@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { ref, onValue, get } from 'firebase/database';
 import { db as database } from '@/lib/firebase';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { auth } from "@/lib/firebase"; // Import auth
 
 type Order = {
   serviceTitle: string;
@@ -24,8 +25,9 @@ const AdminViewComponent = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [view, setView] = useState<'available' | 'completed' | 'unpaid'>('available');
   const [userNames, setUserNames] = useState<UserNames>({});
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null); // State for current user name
   const router = useRouter();
-  const searchParams = useSearchParams(); // Wrapped in Suspense
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -96,6 +98,20 @@ const AdminViewComponent = () => {
     setView(currentView as 'available' | 'completed' | 'unpaid');
   }, [searchParams]);
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
+      if (authUser) {
+        // Fetch current user name
+        const userRef = ref(database, `/users/${authUser.uid}`);
+        const userSnapshot = await get(userRef);
+        if (userSnapshot.exists()) {
+          setCurrentUserName(userSnapshot.val().name || null);
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   const handleViewChange = (newView: 'available' | 'completed' | 'unpaid') => {
     setView(newView);
     router.push(`/admin?view=${newView}`);
@@ -108,7 +124,9 @@ const AdminViewComponent = () => {
   };
 
   const handleOrderClick = (orderId: string) => {
-    router.push(`/order-details/${orderId}?admin=true`); // This correctly passes the admin parameter as a query
+    // Pass the current user's name as a query parameter
+    const userNameQuery = currentUserName ? `&userName=${encodeURIComponent(currentUserName)}` : '';
+    router.push(`/order-details/${orderId}?admin=true${userNameQuery}`);
   };   
 
   return (

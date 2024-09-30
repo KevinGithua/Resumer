@@ -10,7 +10,7 @@ type ChatMessage = {
 };
 
 type ChatComponentProps = {
-  userId: string;  // Current user ID
+  userId: string; // Current user ID
   orderId: string;
   otherParty?: string; // Allow undefined
 };
@@ -19,7 +19,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, otherPar
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);  // Error state
+  const [error, setError] = useState<string | null>(null); // Error state
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageListenerRef = useRef<((snapshot: any) => void) | null>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
@@ -53,7 +53,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, otherPar
   const sendMessage = async () => {
     if (newMessage.trim()) {
       setLoading(true);
-      setError(null);  // Clear any previous errors
+      setError(null); // Clear any previous errors
       try {
         const messageRef = ref(database, `/chats/${orderId}`);
         await push(messageRef, {
@@ -61,18 +61,19 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, otherPar
           message: newMessage,
           timestamp: new Date().toISOString(),
         });
-        setNewMessage("");
+        setNewMessage(""); // Clear the input field after sending
       } catch (error) {
-        setError("Failed to send message. Please try again.");  // Set error message
+        setError("Failed to send message. Please try again."); // Set error message
       } finally {
         setLoading(false);
       }
+    } else {
+      setError("Message cannot be empty."); // Error for empty message
     }
   };
 
   return (
     <div className="chat-box px-2 py-4 bg-white rounded-lg shadow-lg h-full flex flex-col">
-      
       {/* Error Message */}
       {error && (
         <div className="bg-red-100 text-red-600 p-2 rounded-lg mb-2">

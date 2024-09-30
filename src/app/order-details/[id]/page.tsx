@@ -8,11 +8,11 @@ import { fetchOrderDetails, fetchUserDetails, uploadFile, submitLink, updateOrde
 import { db as database } from "@/lib/firebase";
 
 interface OrderDetailsProps {
-  params: { id: string; admin?: string }; // Accept params with an optional admin field
+  params: { id: string; admin?: string; userName?: string }; // Accept params with optional admin and userName fields
 }
 
 const OrderDetails: React.FC<OrderDetailsProps> = ({ params }) => {
-  const { id, admin } = params; // Extract the order ID and admin status from params
+  const { id, admin, userName } = params; // Extract the order ID, admin status, and userName from params
   const [order, setOrder] = useState<Order | null>(null);
   const [userDetails, setUserDetails] = useState<User | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -44,8 +44,10 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ params }) => {
       setCurrentUserName(admin === "true" ? "Support" : "Client");
     } else if (user) {
       fetchCurrentUserName(user.uid);
+    } else {
+      setCurrentUserName(userName || "Unknown"); // Use the userName from params if user is not authenticated
     }
-  }, [admin]);
+  }, [admin, userName]); // Include userName in dependency array
 
   const fetchCurrentUserName = async (userId: string) => {
     const userData = await fetchUserDetails(userId, database);
@@ -148,7 +150,11 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ params }) => {
             )}
           </div>
           <div className="mt-6 lg:mt-0 lg:w-[400px] h-[600px] overflow-y-auto rounded-lg bg-white shadow-md p-4">
-          <ChatComponent userId={currentUserName} orderId={order?.orderId} otherParty={userDetails?.name || "Unknown"} />
+            <ChatComponent 
+              userId={currentUserName} 
+              orderId={order?.orderId} 
+              otherParty={userDetails?.name || "Unknown"} // Provide a fallback for undefined
+            />
           </div>
         </div>
       </div>
