@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useCallback, Suspense } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { ref, get, update } from "firebase/database";
 import { db as database, storage } from "@/lib/firebase";
@@ -33,55 +33,6 @@ const OrderDetails = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [currentUserName, setCurrentUserName] = useState<string>("");
 
-  return (
-    <Suspense fallback={<div>Loading order details...</div>}>
-      <ClientOrderDetails
-        order={order}
-        setOrder={setOrder}
-        userDetails={userDetails}
-        setUserDetails={setUserDetails}
-        file={file}
-        setFile={setFile}
-        link={link}
-        setLink={setLink}
-        loading={loading}
-        setLoading={setLoading}
-        currentUserName={currentUserName}
-        setCurrentUserName={setCurrentUserName}
-      />
-    </Suspense>
-  );
-};
-
-export default OrderDetails;
-
-const ClientOrderDetails = ({
-  order,
-  setOrder,
-  userDetails,
-  setUserDetails,
-  file,
-  setFile,
-  link,
-  setLink,
-  loading,
-  setLoading,
-  currentUserName,
-  setCurrentUserName,
-}: {
-  order: Order | null;
-  setOrder: React.Dispatch<React.SetStateAction<Order | null>>;
-  userDetails: User | null;
-  setUserDetails: React.Dispatch<React.SetStateAction<User | null>>;
-  file: File | null;
-  setFile: React.Dispatch<React.SetStateAction<File | null>>;
-  link: string;
-  setLink: React.Dispatch<React.SetStateAction<string>>;
-  loading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  currentUserName: string;
-  setCurrentUserName: React.Dispatch<React.SetStateAction<string>>;
-}) => {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("id");
 
@@ -141,7 +92,7 @@ const ClientOrderDetails = ({
     };
 
     fetchOrderDetails();
-  }, [orderId, setOrder, setUserDetails]); // Include setOrder and setUserDetails in dependencies
+  }, [orderId]);
 
   useEffect(() => {
     const auth = getAuth(); // Initialize Firebase Auth
@@ -149,9 +100,9 @@ const ClientOrderDetails = ({
     if (user) {
       fetchCurrentUserName(user.uid);
     }
-  }, []); // Empty dependency array as no dynamic values are used
+  }, []);
 
-  const fetchCurrentUserName = useCallback(async (userId: string) => {
+  const fetchCurrentUserName = async (userId: string) => {
     try {
       const userSnapshot = await get(ref(database, `/users/${userId}`));
       if (userSnapshot.exists()) {
@@ -163,7 +114,7 @@ const ClientOrderDetails = ({
       console.error("Error fetching current user details:", error);
       setCurrentUserName("Error");
     }
-  }, [setCurrentUserName]); // Include setCurrentUserName in dependencies
+  };
 
   const handleUpdateOrder = useCallback(
     async (updates: Partial<Order>) => {
@@ -172,7 +123,7 @@ const ClientOrderDetails = ({
       await update(orderRef, updates);
       setOrder(prevOrder => (prevOrder ? { ...prevOrder, ...updates } : prevOrder));
     },
-    [order, setOrder] // Include setOrder in dependencies
+    [order]
   );
 
   const handleFileUpload = async () => {
@@ -241,85 +192,104 @@ const ClientOrderDetails = ({
             </div>
             <div className="pl-6 space-y-2">
               <p><strong className="text-teal-700">Order ID:</strong> {orderId}</p>
-              <p><strong className="text-teal-700">Service Title:</strong> {serviceTitle}</p>
-              <p><strong className="text-teal-700">Status:</strong> {status}</p>
-              <p><strong className="text-teal-700">Completed:</strong> {completed ? "Yes" : "No"}</p>
-              <p><strong className="text-teal-700">Timestamp:</strong> {timestamp}</p>
-              {finishedWork && (
-                <div>
-                  <strong className="text-teal-700">Finished Work:</strong>
-                  <a
-                    href={finishedWork}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    {extractFileName(finishedWork)}
-                  </a>
-                </div>
-              )}
+              <p><strong className="text-teal-700">Order Status:</strong> {status}</p>
+              {Object.entries(orderDetails).map(([key, value]) => (
+                <p key={key}><strong className="text-teal-700">{formatKey(key)}:</strong> {value}</p>
+              ))}
             </div>
           </div>
+
+          {/* Conditional Upload/Link Section */}
+          {order.paymentStatus === "pending" ? (
+            <p className="text-red-600 font-semibold mt-6">Order pending Payment completion</p>
+          ) : !completed ? (
+            <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+              {requiresFileUpload && !requiresLink && (
+                <>
+                  <input
+                    type="file"
+                    onChange={e => setFile(e.target.files?.[0] || null)}
+                    className="block w-full sm:w-auto text-sm text-gray-500 file:mr-0 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 mb-4 sm:mb-0"
+                  />
+                  <button
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded"
+                    onClick={handleFileUpload}
+                    disabled={loading}
+                  >
+                    {loading ? "Submitting..." : "Upload"}
+                  </button>
+                </>
+              )}
+              {requiresLink && !requiresFileUpload && (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Enter the link"
+                    value={link}
+                    onChange={e => setLink(e.target.value)}
+                    className="block w-full sm:w-auto text-sm text-gray-900 border border-gray-300 rounded py-2 px-4 focus:ring-indigo-500 focus:border-indigo-500 mb-4 sm:mb-0"
+                  />
+                  <button
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded"
+                    onClick={handleLinkSubmit}
+                    disabled={loading}
+                  >
+                    {loading ? "Submitting..." : "Submit"}
+                  </button>
+                </>
+              )}
+            </div>
+          ) : null}
+
+          {/* Display Finished Work */}
+          {finishedWork && (
+            <div className="mt-6 p-4 border border-gray-300 rounded-lg bg-white shadow-md">
+              <h4 className="text-lg font-semibold mb-2">Finished Work:</h4>
+              {requiresFileUpload ? (
+                <a
+                  href={finishedWork}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  {extractFileName(finishedWork)}
+                </a>
+              ) : (
+                <a
+                  href={finishedWork}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline break-words"
+                >
+                  {finishedWork}
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* Mark as Completed Button */}
+          {!completed && order.paymentStatus !== "pending" && (
+            <button
+              className="mt-8 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded"
+              onClick={markAsCompleted}
+            >
+              Mark as Completed
+            </button>
+          )}
         </div>
 
-        {/* Chat Component */}
-        {/* Chat Component */}
-        <ChatComponent
-          userId={currentUserName || "Unknown"}
-          orderId={orderId || ""}
-          onMessageReceived={(count) => console.log(`${count} messages received`)}
-        />
-
+        {orderId && !completed && (
+          <div className="mt-6 lg:mt-0 lg:w-[400px] h-[600px] overflow-y-auto rounded-lg">
+            <ChatComponent
+              userId={currentUserName || "Unknown"}
+              orderId={orderId}
+              onMessageReceived={(count) => console.log(`${count} messages received`)}
+            />
+          </div>
+        )}
       </div>
-
-      {/* File Upload and Link Submission */}
-      {requiresFileUpload && (
-        <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-md mt-4">
-          <h3 className="text-lg font-semibold">Upload Your File</h3>
-          <input
-            type="file"
-            onChange={(e) => e.target.files && setFile(e.target.files[0])}
-            className="mt-2"
-          />
-          <button
-            onClick={handleFileUpload}
-            disabled={!file || loading}
-            className={`mt-4 p-2 bg-blue-600 text-white rounded ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            {loading ? "Uploading..." : "Upload"}
-          </button>
-        </div>
-      )}
-
-      {requiresLink && (
-        <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-md mt-4">
-          <h3 className="text-lg font-semibold">Submit Your Link</h3>
-          <input
-            type="text"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            placeholder="Paste your link here"
-            className="mt-2 w-full p-2 border border-gray-300 rounded"
-          />
-          <button
-            onClick={handleLinkSubmit}
-            disabled={!link || loading}
-            className={`mt-4 p-2 bg-blue-600 text-white rounded ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            {loading ? "Submitting..." : "Submit Link"}
-          </button>
-        </div>
-      )}
-
-      {/* Mark as Completed Button */}
-      {!completed && (
-        <button
-          onClick={markAsCompleted}
-          className="mt-4 p-2 bg-green-600 text-white rounded"
-        >
-          Mark as Completed
-        </button>
-      )}
     </div>
   );
 };
+
+export default OrderDetails;
