@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { ref, onValue, get } from 'firebase/database';
 import { db as database } from '@/lib/firebase';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -20,12 +20,12 @@ type UserNames = {
   [key: string]: string;
 };
 
-const AdminView = () => {
+const AdminViewComponent = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [view, setView] = useState<'available' | 'completed' | 'unpaid'>('available');
   const [userNames, setUserNames] = useState<UserNames>({});
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams(); // Wrapped in Suspense
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -112,7 +112,7 @@ const AdminView = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-scree">
+    <div className="flex items-center justify-center min-h-screen">
       <div className="admin-view px-4 sm:px-6 lg:px-8 py-8 rounded-lg max-w-screen-lg w-full">
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-cyan-900 text-center">
           {view === 'available' ? 'Available Orders' : view === 'completed' ? 'Completed Orders' : 'Unpaid Orders'}
@@ -166,6 +166,14 @@ const AdminView = () => {
         </ul>
       </div>
     </div>
+  );
+};
+
+const AdminView = () => {
+  return (
+    <Suspense fallback={<div>Loading admin panel...</div>}>
+      <AdminViewComponent />
+    </Suspense>
   );
 };
 

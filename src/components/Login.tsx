@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { ref, get } from "firebase/database";
 import { useRouter, useSearchParams } from "next/navigation";
 import { app, db as database } from "@/lib/firebase";
 
-const LogIn = () => {
+const LogInComponent = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -104,6 +104,14 @@ const LogIn = () => {
         </button>
       </form>
     </div>
+  );
+};
+
+const LogIn = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LogInComponent />
+    </Suspense>
   );
 };
 

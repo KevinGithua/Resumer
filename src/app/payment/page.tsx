@@ -1,11 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import PayPalButton from "@/components/PayPalButton";
 import MpesaButton from "@/components/MpesaButton";
 import { db, ref, get } from "@/lib/firebase"; // Ensure you have a Firebase client setup
 
-const PaymentPage: React.FC = () => {
+const PaymentPageComponent: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const orderId = searchParams.get("orderId") || "";
@@ -79,6 +80,14 @@ const PaymentPage: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const PaymentPage: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading payment information...</div>}>
+      <PaymentPageComponent />
+    </Suspense>
   );
 };
 

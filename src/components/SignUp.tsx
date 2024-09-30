@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -9,7 +9,7 @@ import { app } from "@/lib/firebase";
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-const SignUp = () => {
+const SignUpComponent = () => {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
@@ -125,6 +125,14 @@ const SignUp = () => {
         </button>
       </form>
     </div>
+  );
+};
+
+const SignUp: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading sign up form...</div>}>
+      <SignUpComponent />
+    </Suspense>
   );
 };
 
