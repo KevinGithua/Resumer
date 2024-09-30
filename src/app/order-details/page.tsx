@@ -227,7 +227,7 @@ const OrderDetails = () => {
                     placeholder="Enter the link"
                     value={link}
                     onChange={e => setLink(e.target.value)}
-                    className="block w-full sm:w-auto text-sm text-gray-900 border border-gray-300 rounded py-2 px-4 focus:ring-indigo-500 focus:border-indigo-500 mb-4 sm:mb-0"
+                    className="block w-full sm:w-auto text-sm text-gray-900 border border-gray-300 rounded py-2 px-4 focus:ring-cyan-500 focus:border-cyan-500 sm:mr-4"
                   />
                   <button
                     className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded"
@@ -241,52 +241,28 @@ const OrderDetails = () => {
             </div>
           ) : null}
 
-          {/* Display Finished Work */}
-          {finishedWork && (
-            <div className="mt-6 p-4 border border-gray-300 rounded-lg bg-white shadow-md">
-              <h4 className="text-lg font-semibold mb-2">Finished Work:</h4>
-              {requiresFileUpload ? (
-                <a
-                  href={finishedWork}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline"
-                >
-                  {extractFileName(finishedWork)}
-                </a>
-              ) : (
-                <a
-                  href={finishedWork}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline break-words"
-                >
-                  {finishedWork}
-                </a>
-              )}
+          {/* Download Completed Work */}
+          {completed && finishedWork && (
+            <div className="mt-4 text-green-800 font-semibold">
+              Completed work:{" "}
+              <a
+                href={finishedWork}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-700 underline"
+              >
+                {extractFileName(finishedWork)}
+              </a>
             </div>
           )}
-
-          {/* Mark as Completed Button */}
-          {!completed && order.paymentStatus !== "pending" && (
-            <button
-              className="mt-8 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded"
-              onClick={markAsCompleted}
-            >
-              Mark as Completed
-            </button>
-          )}
         </div>
-
-        {orderId && !completed && (
-          <div className="mt-6 lg:mt-0 lg:w-[400px] h-[600px] overflow-y-auto rounded-lg">
-            <ChatComponent
+        <div className="mt-6 lg:mt-0 lg:w-[400px] h-[600px] overflow-y-auto rounded-lg">
+        <ChatComponent
               userId={currentUserName || "Unknown"}
-              orderId={orderId}
+              orderId={orderId || ""}
               onMessageReceived={(count) => console.log(`${count} messages received`)}
             />
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
