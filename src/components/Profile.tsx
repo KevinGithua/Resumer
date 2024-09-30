@@ -103,8 +103,8 @@ const ProfilePage = () => {
   }, [view]);
 
   const handleOrderClick = (orderId: string) => {
-    router.push(`/order-details?id=${orderId}&admin=false`);
-  };
+    router.push(`/order-details/${orderId}?admin=false`); // This correctly passes the admin parameter as a query
+  };  
 
   const formatTimestamp = (timestamp: string) => {
     if (!timestamp || timestamp === "No Date Provided") return "No Date Provided";

@@ -108,8 +108,8 @@ const AdminViewComponent = () => {
   };
 
   const handleOrderClick = (orderId: string) => {
-    router.push(`/order-details?id=${orderId}&admin=true`); // Pass the admin prop as true
-  };
+    router.push(`/order-details/${orderId}?admin=true`); // This correctly passes the admin parameter as a query
+  };   
 
   return (
     <div className="flex items-center justify-center min-h-screen">

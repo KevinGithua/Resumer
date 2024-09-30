@@ -1,93 +1,86 @@
-// utils/orderUtils.ts
-import { ref, get, onValue } from 'firebase/database';
-import { db as database } from '@/lib/firebase';
+// orderUtils.ts
+
+import { ref, get, update } from "firebase/database";
+import { storage } from "@/lib/firebase";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export type Order = {
   serviceTitle: string;
-  userId: string;
   orderId: string;
+  userUid: string;
   timestamp: string;
-  completed: boolean;
   status: string;
+  finishedWork?: string;
+  completed: boolean;
   paymentStatus: string;
   [key: string]: any;
 };
 
-export type View = 'available' | 'completed' | 'unpaid';
+export type User = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+};
 
-export const fetchOrders = async (view: View, userId?: string) => {
+// Fetch order details by orderId
+export const fetchOrderDetails = async (orderId: string, database: any): Promise<Order | null> => {
   const ordersRef = ref(database, `/orders`);
-  try {
-    const ordersSnapshot = await get(ordersRef);
-    let ordersList: Order[] = [];
-    let userIds: Set<string> = new Set();
+  const ordersSnapshot = await get(ordersRef);
 
-    if (ordersSnapshot.exists()) {
-      const allOrders = ordersSnapshot.val();
+  if (ordersSnapshot.exists()) {
+    const allOrders = ordersSnapshot.val();
+    let foundOrder: Order | null = null;
 
-      for (const service in allOrders) {
-        if (userId && !allOrders[service][userId]) continue;
-
-        for (const user in allOrders[service]) {
-          for (const orderId in allOrders[service][user]) {
-            const order = allOrders[service][user][orderId];
-            const orderData: Order = {
-              serviceTitle: service,
-              userId: user,
-              orderId,
-              timestamp: order.timestamp || 'No Date Provided',
-              completed: order.completed || false,
-              status: order.orderStatus || 'Pending',
-              paymentStatus: order.paymentStatus || 'Pending',
-              ...order,
-            };
-            ordersList.push(orderData);
-            userIds.add(user);
-          }
+    Object.keys(allOrders).some(service => {
+      const userOrders = allOrders[service];
+      Object.keys(userOrders).some(userUid => {
+        if (userOrders[userUid][orderId]) {
+          const orderData = userOrders[userUid][orderId];
+          foundOrder = {
+            serviceTitle: service || "Service Title Not Available",
+            orderId,
+            userUid,
+            timestamp: orderData.timestamp || "",
+            status: orderData.status || "Pending",
+            completed: orderData.completed || false,
+            paymentStatus: orderData.paymentStatus || "Pending",
+            ...orderData,
+          };
+          return true;
         }
-      }
-      
-      ordersList.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    }
-
-    const filteredOrders = ordersList.filter(order => {
-      if (view === 'available') {
-        return !order.completed && order.paymentStatus === 'complete';
-      } else if (view === 'completed') {
-        return order.completed;
-      } else if (view === 'unpaid') {
-        return !order.completed && order.paymentStatus === 'pending';
-      }
-      return false;
+        return false;
+      });
+      return !!foundOrder;
     });
-
-    return { orders: filteredOrders, userIds: Array.from(userIds) };
-  } catch (error) {
-    console.error('Error fetching orders:', error);
-    return { orders: [], userIds: [] };
+    return foundOrder;
   }
+  return null;
 };
 
-export const fetchUserNames = async (userIds: string[]) => {
-  let userNamesMap: { [key: string]: string } = {};
-
-  for (const userId of userIds) {
-    const userRef = ref(database, `/users/${userId}`);
-    try {
-      const userSnapshot = await get(userRef);
-      if (userSnapshot.exists()) {
-        userNamesMap[userId] = userSnapshot.val().name || 'Unknown User';
-      }
-    } catch (error) {
-      console.error(`Error fetching user details for ${userId}:`, error);
-    }
+// Fetch user details by userUid
+export const fetchUserDetails = async (userUid: string, database: any): Promise<User | null> => {
+  const userSnapshot = await get(ref(database, `/users/${userUid}`));
+  if (userSnapshot.exists()) {
+    return userSnapshot.val();
   }
-
-  return userNamesMap;
+  return { name: "Unknown", email: "Unknown", phoneNumber: "Unknown" };
 };
 
-export const formatTimestamp = (timestamp: string) => {
-  if (!timestamp || timestamp === 'No Date Provided') return 'No Date Provided';
-  const date = new Date(timestamp);
-  return date.toLocaleString();
+// Update order
+export const updateOrder = async (order: Order, updates: Partial<Order>, database: any) => {
+  const orderRef = ref(database, `/orders/${order.serviceTitle}/${order.userUid}/${order.orderId}`);
+  await update(orderRef, updates);
+};
+
+// Upload file to storage and update order
+export const uploadFile = async (file: File, orderId: string, order: Order, database: any) => {
+  const fileStorageRef = storageRef(storage, `orders/${orderId}/${file.name}`);
+  await uploadBytes(fileStorageRef, file);
+  const downloadURL = await getDownloadURL(fileStorageRef);
+  await updateOrder(order, { finishedWork: downloadURL, status: "Completed" }, database);
+};
+
+// Submit a link for the order
+export const submitLink = async (link: string, order: Order, database: any) => {
+  await updateOrder(order, { finishedWork: link }, database);
 };

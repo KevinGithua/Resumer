@@ -10,17 +10,16 @@ type ChatMessage = {
 };
 
 type ChatComponentProps = {
-  userId: string;
+  userId: string;  // Current user ID
   orderId: string;
-  onMessageReceived: (count: number) => void;
+  otherParty?: string; // Allow undefined
 };
 
-const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, onMessageReceived }) => {
+const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, otherParty = "Unknown" }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);  // Error state
-  const [otherParty, setOtherParty] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageListenerRef = useRef<((snapshot: any) => void) | null>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
@@ -30,17 +29,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, onMessag
 
     const handleNewMessage = (snapshot: any) => {
       const message: ChatMessage = snapshot.val();
-      setMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages, { ...message, id: snapshot.key }];
-
-        // Detect the other party (someone who's not the current user)
-        if (message.sender !== userId && !otherParty) {
-          setOtherParty(message.sender);
-        }
-
-        onMessageReceived(updatedMessages.length);
-        return updatedMessages;
-      });
+      setMessages((prevMessages) => [...prevMessages, { ...message, id: snapshot.key }]);
     };
 
     if (messageListenerRef.current) {
@@ -53,7 +42,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, onMessag
     return () => {
       off(messagesRef, "child_added", handleNewMessage);
     };
-  }, [orderId, userId, onMessageReceived, otherParty]);
+  }, [orderId]);
 
   useEffect(() => {
     if (messagesEndRef.current && chatBoxRef.current) {
@@ -93,7 +82,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, onMessag
 
       {/* Top bar showing the other party's identity */}
       <div className="bg-cyan-600 text-white p-3 rounded-t-lg shadow-md mb-2 flex items-center">
-        <span className="text-lg font-semibold">{otherParty ? otherParty : "Loading..."}</span>
+        <span className="text-lg font-semibold">{otherParty}</span>
       </div>
 
       {/* Chat messages */}
