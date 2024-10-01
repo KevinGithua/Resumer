@@ -83,7 +83,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, otherPar
 
       {/* Top bar showing the other party's identity */}
       <div className="bg-cyan-600 text-white p-3 rounded-t-lg shadow-md mb-2 flex items-center">
-        <span className="text-lg font-semibold">{otherParty}</span>
+        <span className="text-lg font-semibold">{userId}</span>
       </div>
 
       {/* Chat messages */}

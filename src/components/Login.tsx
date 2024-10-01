@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
 import { ref, get } from "firebase/database";
 import { useRouter, useSearchParams } from "next/navigation";
 import { app, db as database } from "@/lib/firebase";
@@ -11,13 +11,12 @@ const LogInComponent = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [passwordResetMessage, setPasswordResetMessage] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Memoize Firebase auth and database instances
   const auth = useMemo(() => getAuth(app), []);
 
-  // Debounced input handlers
   const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   }, []);
@@ -26,7 +25,6 @@ const LogInComponent = () => {
     setPassword(e.target.value);
   }, []);
 
-  // Log in handler
   const handleLogIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -43,17 +41,40 @@ const LogInComponent = () => {
       const returnUrl = searchParams.get("returnUrl") || (userData?.role === "admin" ? "/admin" : "/profile");
       router.push(returnUrl);
     } catch (err: any) {
-      setError(err.message || "An error occurred. Please try again.");
+      // Friendly error messages
+      if (err.code === "auth/wrong-password") {
+        setError("Incorrect password. Please try again.");
+      } else if (err.code === "auth/user-not-found") {
+        setError("No account found with this email.");
+      } else if (err.code === "auth/invalid-email") {
+        setError("Invalid email address.");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Auth state listener
+  // Forgot password handler
+  const handleForgotPassword = async () => {
+    setPasswordResetMessage(null);
+    if (!email) {
+      setError("Please enter your email address to reset your password.");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setPasswordResetMessage("Password reset email sent. Please check your inbox.");
+    } catch (err: any) {
+      setError(err.message || "An error occurred while sending the reset email.");
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Fetch user data only once after authentication
         const userRef = ref(database, `/users/${user.uid}`);
         const userSnapshot = await get(userRef);
         const userData = userSnapshot.val();
@@ -72,6 +93,7 @@ const LogInComponent = () => {
       >
         <h2 className="text-2xl md:text-3xl font-bold mb-4">Log In</h2>
         {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+        {passwordResetMessage && <p className="text-green-500 mb-4 text-center">{passwordResetMessage}</p>}
 
         <label className="block mb-4">
           <span className="text-gray-700">Email</span>
@@ -102,6 +124,23 @@ const LogInComponent = () => {
         >
           {loading ? "Logging In..." : "Log In"}
         </button>
+
+        <div className="flex justify-between mt-4">
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            className="text-sm text-blue-500 hover:underline"
+          >
+            Forgot Password?
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/signup")}
+            className="text-sm text-blue-500 hover:underline"
+          >
+            Don't have an account? Sign Up
+          </button>
+        </div>
       </form>
     </div>
   );
