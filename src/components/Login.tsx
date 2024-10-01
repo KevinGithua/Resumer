@@ -138,7 +138,7 @@ const LogInComponent = () => {
             onClick={() => router.push("/signup")}
             className="text-sm text-blue-500 hover:underline"
           >
-            Don't have an account? Sign Up
+            Don&apos;t have an account? Sign Up
           </button>
         </div>
       </form>
