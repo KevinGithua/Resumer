@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 
 type MpesaButtonProps = {
@@ -8,7 +8,7 @@ type MpesaButtonProps = {
   userId: string;
   onSuccess: (response: any) => void;
   onError: (error: any) => void;
-  className?: string; // Add className prop
+  className?: string;
 };
 
 const MpesaButton: React.FC<MpesaButtonProps> = ({
@@ -18,16 +18,16 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
   userId,
   onSuccess,
   onError,
-  className = "", // Default to empty string if no className is provided
+  className = "",
 }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [checkoutRequestId, setCheckoutRequestId] = useState<string | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
 
   const normalizePhoneNumber = (number: string): string => {
-    // Remove spaces and trim the input
     number = number.trim().replace(/\s+/g, '');
-
     if (number.startsWith('+254')) {
       return number.replace('+', '');
     } else if (number.startsWith('0')) {
@@ -35,11 +35,11 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
     } else if (number.startsWith('254')) {
       return number;
     }
-    return '254' + number; // Default to adding 254 if no recognized prefix
+    return '254' + number;
   };
 
   const validatePhoneNumber = (number: string): boolean => {
-    const phoneRegex = /^254[0-9]{9}$/; // Must start with 254 followed by 9 digits
+    const phoneRegex = /^254[0-9]{9}$/;
     return phoneRegex.test(number);
   };
 
@@ -48,45 +48,74 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       setError('Please enter your phone number.');
       return;
     }
-
     const normalizedNumber = normalizePhoneNumber(phoneNumber);
     if (!validatePhoneNumber(normalizedNumber)) {
       setError('Please enter a valid phone number.');
       return;
     }
-
-    setError(null); // Clear previous errors
-    setLoading(true); // Start loading state
-
+    setError(null);
+    setLoading(true);
     try {
-      console.log('Initiating M-Pesa payment with data:', { orderId, amount, normalizedNumber, serviceTitle, userId });
-
       const response = await axios.post('/api/mpesa/payment', {
         orderId,
         amount,
-        phoneNumber: normalizedNumber, // Use normalized phone number
+        phoneNumber: normalizedNumber,
         serviceTitle,
         userId,
       });
-
-      console.log('Payment response:', response.data);
-
       if (response.data.success) {
-        onSuccess(response.data.data); // Call success callback
+        setCheckoutRequestId(response.data.data.CheckoutRequestID);
+        console.log('CheckoutRequestID set, waiting for callback...');
       } else {
-        throw new Error(response.data.message); // Throw error if response is not successful
+        throw new Error(response.data.message);
       }
     } catch (error) {
       const errorMessage = axios.isAxiosError(error)
         ? error.response?.data || error.message
         : 'An unexpected error occurred';
       console.error('Payment error:', errorMessage);
-      onError(new Error(errorMessage)); // Notify of the error
-      setError(errorMessage); // Set error message to display
+      onError(new Error(errorMessage));
+      setError(errorMessage);
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false);
     }
-  }, [orderId, amount, phoneNumber, serviceTitle, userId, onSuccess, onError]);
+  }, [orderId, amount, phoneNumber, serviceTitle, userId, onError]);
+
+  useEffect(() => {
+    if (checkoutRequestId) {
+      const interval = setInterval(async () => {
+        console.log('Polling payment status...');
+        try {
+          const response = await axios.get(`/api/payments/status?checkoutRequestId=${checkoutRequestId}`);
+          const { status } = response.data;
+
+          console.log('Payment status response:', response.data); // For debugging
+
+          if (status === 'complete') {
+            clearInterval(interval);
+            setPaymentStatus("success");
+          } else if (status === 'failed') {
+            clearInterval(interval);
+            setPaymentStatus("failed");
+          }
+        } catch (err) {
+          console.error('Error fetching payment status:', err);
+        }
+      }, 5000); // Updated interval to 5000ms (5 seconds)
+
+      return () => clearInterval(interval); // Cleanup on unmount
+    }
+  }, [checkoutRequestId]);
+
+  useEffect(() => {
+    if (paymentStatus === "success") {
+      console.log('Payment successful, invoking onSuccess callback');
+      onSuccess({ checkoutRequestId });
+    } else if (paymentStatus === "failed") {
+      console.error('Payment failed, invoking onError callback');
+      onError(new Error('Payment failed or incomplete'));
+    }
+  }, [paymentStatus, checkoutRequestId, onSuccess, onError]);
 
   return (
     <div className={`mpesa-button-container ${className} p-2 bg-white rounded-lg shadow-lg border border-gray-300`}>
@@ -103,7 +132,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       </div>
       <button
         onClick={initiateMpesaPayment}
-        className={`bg-green-600 text-white py-2 px-4 rounded-md w-full flex items-center justify-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} // Disable button while loading
+        className={`bg-green-600 text-white py-2 px-4 rounded-md w-full flex items-center justify-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
         disabled={loading}
       >
         {loading ? 'Processing...' : 'Pay with M-Pesa'}

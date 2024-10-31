@@ -23,19 +23,19 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
 }) => {
   return (
     <div className={`flex flex-col sm:flex-row sm:justify-center gap-4 p-4 bg-white rounded-lg shadow-md ${className}`}>
-      <PayPalButton 
-        amount={amount} 
-        orderId={orderId} 
-        serviceTitle={serviceTitle} 
-        userId={userId} 
+      <PayPalButton
+        amount={amount}
+        orderId={orderId}
+        serviceTitle={serviceTitle}
+        userId={userId}
         onSuccess={onSuccess}
         onError={onError}
       />
-      <MpesaButton 
-        amount={amount} 
-        orderId={orderId} 
-        serviceTitle={serviceTitle} 
-        userId={userId} 
+      <MpesaButton
+        amount={amount}
+        orderId={orderId}
+        serviceTitle={serviceTitle}
+        userId={userId}
         onSuccess={onSuccess}
         onError={onError}
       />

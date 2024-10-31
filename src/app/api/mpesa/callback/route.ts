@@ -7,11 +7,9 @@ export async function POST(req: NextRequest) {
     const bodyText = await req.text();
     const body = JSON.parse(bodyText);
 
-    console.log('Received callback:', body);
-
     // Provide default values while destructuring to prevent the error
     const { Body: { stkCallback } = { stkCallback: null } } = body;
-    
+
     if (!stkCallback) {
       throw new Error('stkCallback is undefined');
     }
@@ -20,21 +18,34 @@ export async function POST(req: NextRequest) {
     console.log('M-Pesa Callback:', stkCallback);
 
     const { CheckoutRequestID, ResultCode, CallbackMetadata } = stkCallback;
+
     if (ResultCode === 0 && CallbackMetadata) {
       const { Item } = CallbackMetadata;
-      const transactionCode = Item.find((i: any) => i.Name === 'MpesaReceiptNumber').Value;
+      const transactionCode = Item.find((i: any) => i.Name === 'MpesaReceiptNumber')?.Value;
+
+      if (!transactionCode) {
+        console.log('Transaction code not found in callback data');
+        return NextResponse.json({ success: false, message: 'Transaction code not found' });
+      }
 
       // Retrieve the order path from the payment node
       const paymentPath = `payments/${CheckoutRequestID}`;
       const paymentSnapshot = await get(ref(db, paymentPath));
-      const orderPath = paymentSnapshot.val().orderPath;
+      const orderPath = paymentSnapshot.val()?.orderPath;
+
+      if (!orderPath) {
+        console.log('Order path not found in payment data');
+        return NextResponse.json({ success: false, message: 'Order path not found' });
+      }
 
       // Update the order data in Firebase
       await update(ref(db, orderPath), { transactionCode, paymentStatus: 'complete' });
 
       console.log(`Order ${orderPath} updated with transactionCode ${transactionCode}`);
 
-      return NextResponse.json({ success: true, message: 'Callback received', data: stkCallback });
+      // Redirect to the profile page on successful update
+      const redirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/profile`;
+      return NextResponse.redirect(redirectUrl);
     } else {
       console.log('Transaction failed or incomplete callback data');
       return NextResponse.json({ success: false, message: 'Transaction failed or incomplete callback data', data: stkCallback });

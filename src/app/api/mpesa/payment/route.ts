@@ -28,14 +28,10 @@ export async function POST(req: Request) {
   try {
     const { amount, phoneNumber, orderId, serviceTitle, userId } = await req.json();
 
-    console.log('Received payment request:', { amount, phoneNumber, orderId, serviceTitle, userId });
-
     const accessToken = await getMpesaAccessToken();
-    console.log('Generated access token:', accessToken);
 
     const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, -3);
     const password = Buffer.from(`${shortCode}${passKey}${timestamp}`).toString('base64');
-
     const data = {
       BusinessShortCode: shortCode,
       Password: password,
@@ -62,17 +58,14 @@ export async function POST(req: Request) {
       }
     );
 
-    console.log('M-Pesa response:', response.data);
-
     const checkoutRequestId = response.data.CheckoutRequestID;
 
     // Create a new payment node with the checkoutRequestId
     const paymentPath = `payments/${checkoutRequestId}`;
-    await update(ref(db, paymentPath), { orderPath: `orders/${serviceTitle}/${userId}/${orderId}` });
+    await update(ref(db, paymentPath), { orderPath: `orders/${serviceTitle}/${userId}/${orderId}`, status: 'pending' });
 
     console.log(`Payment node created with CheckoutRequestID ${checkoutRequestId}`);
-
-    return NextResponse.json({ success: true, data: response.data });
+    return NextResponse.json({ success: true, data: { checkoutRequestId } });
   } catch (error: any) {
     console.error('M-Pesa Payment Failed:', error.response?.data || error.message);
     return NextResponse.json({ success: false, message: 'M-Pesa payment failed', error: error.response?.data || error.message });
