@@ -30,8 +30,9 @@ export async function POST(req: Request) {
     await orderRef.update(updatedOrderData);
 
     // Redirect to the profile page on successful update
-    const redirectUrl = new URL('/profile', process.env.NEXT_PUBLIC_BASE_URL).toString();
+    const redirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/profile`;
     return NextResponse.redirect(redirectUrl);
+    
   } catch (error) {
     console.error('Error updating order:', error);
     return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
