@@ -29,35 +29,35 @@ const HomePage = () => {
   };
 
   return (
-    <div className="main flex flex-col lg:flex-row justify-center items-center text-center lg:text-left min-h-[calc(100vh-64px)] px-4 sm:px-6 lg:px-16 xl:px-24 2xl:px-32 relative z-10">
-      <div className="landing-content flex flex-col justify-center items-center lg:items-start lg:max-w-full z-20 mb-8 lg:mb-0 lg:w-1/2 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-center lg:text-left">
-          Welcome to <span className="text-pink-500 text-5xl sm:text-6xl lg:text-7xl xl:text-8xl">Resumer</span>
+    <main className="flex flex-col sm:flex-row gap-20 2xl:gap-0 justify-between sm:items-start text-center min-h-[calc(100vh-64px)] ">
+      <div className="landing-content sm:text-left flex flex-col gap-8 items-center sm:items-start justify-between md:w-1/2">
+      <div className='font-bold'>
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl 2xl:text-[10rem] pt-10">
+          Welcome to <span className="text-pink-500">Resumer</span>
         </h1>
-        <p className="text-lg sm:text-xl lg:text-2xl text-cyan-500 mb-8">
+      </div>
+      <div className='2xl:py-10'>
+        <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-5xl text-cyan-500">
           Professional Resume Writing and Revamping Services
         </p>
+      </div>
+      <div>
         <button
           onClick={handleGetStartedClick}
           aria-label="Get started with our services"
-          className="cta-button bg-cyan-500 text-white mb-10 py-2 px-4 sm:py-4 sm:px-6 text-base lg:text-lg xl:text-xl rounded-lg shadow-lg hover:bg-teal-800 hover:-translate-y-1 transition-transform duration-300"
+          className="cta-button text-lg font-bold lg:text-xl xl:text-4xl 2xl:text-6xl hover:-translate-y-1"
         >
           Get Started
         </button>
       </div>
+      </div>
 
-      <div className="image-container flex justify-center lg:w-1/2 mb-4">
-        <div className="flip-container w-full flex justify-center items-start">
+      <div className="image-container flex items-center mb-4 sm:mb-0 2xl:pt-20">
+        <div className="flip-container ">
           <Image
             src={mainSample}
             alt="A sample resume showcasing our professional writing services"
-            className="rounded-lg animation-flip"
-            style={{
-              objectFit: 'cover',
-              width: '80%',
-              height: 'auto',
-              
-            }}
+            className=" 2xl:max-h-max"
             priority
           />
         </div>
@@ -68,7 +68,7 @@ const HomePage = () => {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-    </div>
+    </main>
   );
 };
 

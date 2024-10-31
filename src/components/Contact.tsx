@@ -6,7 +6,6 @@ import { FaWhatsapp, FaInstagram, FaFacebookF } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
 import Head from 'next/head';
 
-// TypeScript types
 interface FormData {
     name: string;
     email: string;
@@ -58,59 +57,58 @@ const Contact: React.FC = () => {
                 <meta name="twitter:image" content="/images/contact-page.png" />
             </Head>
 
-            <section className="contact py-6 px-4 bg-cyan-100 text-center">
-                <h1 className="text-3xl font-bold mb-8 text-teal-800">Contact Us</h1>
-                
-                <div className="contact-container flex flex-col lg:flex-row justify-center gap-8">
+            <main className="text-center px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8 sm:py-10 lg:py-12 xl:py-16">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-8 text-teal-800">Contact Us</h1>
+                <div className="flex flex-col lg:flex-row justify-evenly gap-8 lg:gap-12 xl:gap-16">
                     
                     {/* Contact Info */}
-                    <article className="contact-info flex flex-col gap-6 md:max-w-md mx-auto w-full">
-                        <a href="tel:+254795644422" className="contact-card bg-white p-6 rounded-lg shadow-lg flex items-center gap-4 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
-                            <FaWhatsapp className="icon text-2xl text-teal-500" aria-label="WhatsApp" />
-                            <div>
-                                <h2 className="text-teal-500 mb-2">WhatsApp</h2>
+                    <article className="flex flex-col justify-evenly w-full text-lg sm:text-xl gap-6 lg:w-1/3">
+                        <a href="tel:+254795644422" className="bg-white p-4 sm:p-6 lg:p-8 xl:p-10 rounded-lg shadow-lg flex justify-start items-center space-x-3 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
+                            <FaWhatsapp className="text-teal-500 text-2xl xl:text-4xl" aria-label="WhatsApp" />
+                            <div className="flex flex-col items-start gap-1">
+                                <h3 className="text-teal-500">WhatsApp</h3>
                                 <p className="text-teal-800">+254795644422</p>
                             </div>
                         </a>
-                        <a href="mailto:nginamiriam2@gmail.com" className="contact-card bg-white p-6 rounded-lg shadow-lg flex items-center gap-4 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
-                            <MdOutlineEmail className="icon text-2xl text-teal-500" aria-label="Email" />
-                            <div>
-                                <h2 className="text-teal-500 mb-2">Email</h2>
+                        <a href="mailto:nginamiriam2@gmail.com" className="bg-white p-4 sm:p-6 lg:p-8 xl:p-10 rounded-lg shadow-lg flex justify-start items-center space-x-3 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
+                            <MdOutlineEmail className="text-teal-500 text-2xl xl:text-4xl" aria-label="Email" />
+                            <div className="flex flex-col items-start gap-1">
+                                <h3 className="text-teal-500">Email</h3>
                                 <p className="text-teal-800">nginamiriam2@gmail.com</p>
                             </div>
                         </a>
-                        <a href="https://www.instagram.com/cv91829?igsh=YzhmbXVjZzBienRz" className="contact-card bg-white p-6 rounded-lg shadow-lg flex items-center gap-4 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
-                            <FaInstagram className="icon text-2xl text-teal-500" aria-label="Instagram" />
-                            <div>
-                                <h2 className="text-teal-500 mb-2">Instagram</h2>
+                        <a href="https://www.instagram.com/cv91829?igsh=YzhmbXVjZzBienRz" className="bg-white p-4 sm:p-6 lg:p-8 xl:p-10 rounded-lg shadow-lg flex justify-start items-center space-x-3 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
+                            <FaInstagram className="text-teal-500 text-2xl xl:text-4xl" aria-label="Instagram" />
+                            <div className="flex flex-col items-start gap-1">
+                                <h3 className="text-teal-500">Instagram</h3>
                                 <p className="text-teal-800">ResumeWriter</p>
                             </div>
                         </a>
-                        <a href="https://www.facebook.com/profile.php?id=100094574041320" className="contact-card bg-white p-6 rounded-lg shadow-lg flex items-center gap-4 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
-                            <FaFacebookF className="icon text-2xl text-teal-500" aria-label="Facebook" />
-                            <div>
-                                <h2 className="text-teal-500 mb-2">Facebook</h2>
+                        <a href="https://www.facebook.com/profile.php?id=100094574041320" className="bg-white p-4 sm:p-6 lg:p-8 xl:p-10 rounded-lg shadow-lg flex items-center justify-start space-x-3 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
+                            <FaFacebookF className="text-teal-500 text-2xl xl:text-4xl" aria-label="Facebook" />
+                            <div className="flex flex-col items-start gap-1">
+                                <h3 className="text-teal-500">Facebook</h3>
                                 <p className="text-teal-800">@ResumeWriter</p>
                             </div>
                         </a>
                     </article>
                     
                     {/* Contact Form */}
-                    <article className="chat-section flex-grow max-w-lg mx-auto w-full">
-                        <h2 className="text-xl font-semibold mb-4 text-teal-800">Get in Touch with Support</h2>
+                    <article className="w-full lg:w-2/3">
+                        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-6 text-teal-800">Get in Touch with Support</h2>
                         
                         {submitted ? (
-                            <div className="thank-you-message text-teal-800 text-lg">
+                            <div className="thank-you-message text-teal-800 text-lg sm:text-xl">
                                 <p>Thank you for reaching out! We will get back to you shortly.</p>
                                 <button
-                                    className="go-back-button mt-4 py-2 px-4 bg-teal-800 text-white rounded-lg"
+                                    className="go-back-button mt-4 py-2 px-4 sm:py-3 sm:px-6 lg:py-4 lg:px-8 bg-teal-800 text-white rounded-lg"
                                     onClick={handleGoBack}
                                 >
                                     Go Back
                                 </button>
                             </div>
                         ) : (
-                            <form className="contact-form bg-white p-6 rounded-lg shadow-lg" onSubmit={handleSubmit}>
+                            <form className="bg-white p-4 sm:p-6 lg:p-8 xl:p-10 rounded-lg shadow-lg" onSubmit={handleSubmit}>
                                 <div className="form-group mb-4">
                                     <input
                                         placeholder="Your Name"
@@ -119,7 +117,7 @@ const Contact: React.FC = () => {
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
-                                        className="w-full p-3 border border-teal-300 rounded-lg"
+                                        className="w-full p-3 sm:p-4 border border-teal-300 rounded-lg"
                                     />
                                 </div>
                                 <div className="form-group mb-4">
@@ -130,7 +128,7 @@ const Contact: React.FC = () => {
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
-                                        className="w-full p-3 border border-teal-300 rounded-lg"
+                                        className="w-full p-3 sm:p-4 border border-teal-300 rounded-lg"
                                     />
                                 </div>
                                 <div className="form-group mb-4">
@@ -140,13 +138,13 @@ const Contact: React.FC = () => {
                                         value={formData.message}
                                         onChange={handleChange}
                                         required
-                                        className="w-full p-3 border border-teal-300 rounded-lg resize-none"
+                                        className="w-full p-3 sm:p-4 border border-teal-300 rounded-lg resize-none"
                                         rows={5}
                                     />
                                 </div>
                                 <button
                                     type="submit"
-                                    className="w-full py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
+                                    className="w-full py-3 sm:py-4 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
                                 >
                                     Submit
                                 </button>
@@ -154,7 +152,7 @@ const Contact: React.FC = () => {
                         )}
                     </article>
                 </div>
-            </section>
+            </main>
         </>
     );
 };
