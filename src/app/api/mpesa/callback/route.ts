@@ -21,7 +21,6 @@ export async function POST(req: NextRequest) {
       const transactionCode = Item.find((i: any) => i.Name === 'MpesaReceiptNumber')?.Value;
 
       if (!transactionCode) {
-        console.log('Transaction code not found in callback data');
         return NextResponse.json({ success: false, message: 'Transaction code not found' });
       }
 
@@ -31,7 +30,6 @@ export async function POST(req: NextRequest) {
       const orderPath = paymentSnapshot.val()?.orderPath;
 
       if (!orderPath) {
-        console.log('Order path not found in payment data');
         return NextResponse.json({ success: false, message: 'Order path not found' });
       }
 
@@ -40,7 +38,6 @@ export async function POST(req: NextRequest) {
       const orderSnapshot = await orderRef.once('value');
 
       if (!orderSnapshot.exists()) {
-        console.log('Order not found');
         return NextResponse.json({ success: false, message: 'Order not found' });
       }
 

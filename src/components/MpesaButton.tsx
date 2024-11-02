@@ -52,7 +52,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       return;
     }
     setError(null);
-    setLoading(true); // Start loading state
+    setLoading(true);
 
     try {
       const response = await axios.post('/api/mpesa/payment', {
@@ -64,7 +64,6 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       });
       
       if (response.data.success) {
-        // Start polling with order path
         pollPaymentStatus(orderId);
       } else {
         throw new Error(response.data.message);
@@ -76,7 +75,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       console.error('Payment error:', errorMessage);
       onError(new Error(errorMessage));
       setError(errorMessage);
-      setLoading(false); // Stop loading on error
+      setLoading(false);
     }
   }, [orderId, amount, phoneNumber, serviceTitle, userId, onError]);
 
@@ -87,17 +86,16 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
         
         if (response.data.success) {
           if (response.data.paymentStatus === 'complete') {
-            clearInterval(intervalId); // Stop polling as status is confirmed complete
-            setLoading(false); // Stop loading
+            clearInterval(intervalId);
+            setLoading(false);
             onSuccess(); 
           }
         }
       } catch (error) {
         console.error('Error fetching payment status:', error);
       }
-    }, 5000); // Poll every 5 seconds
+    }, 5000);
 
-    // Clean up the interval on component unmount
     return () => clearInterval(intervalId);
   }, [onSuccess, userId, serviceTitle]);
 

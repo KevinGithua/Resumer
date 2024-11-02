@@ -1,7 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 
-const FooterCard: React.FC<{ title: string; titleHref: string; links: { href: string; text: string }[] }> = ({ title, titleHref, links }) => {
+interface FooterCardProps {
+  title: string;
+  titleHref: string;
+  links: { href: string; text: string }[];
+}
+
+const FooterCard: React.FC<FooterCardProps> = ({ title, titleHref, links }) => {
   return (
     <div className="bg-cyan-50 p-4 rounded-md shadow-md hover:bg-transparent hover:border hover:border-teal-300 transition-all duration-300 ease-in-out">
       <Link href={titleHref} aria-label={`${title} section`}>
@@ -20,55 +26,56 @@ const FooterCard: React.FC<{ title: string; titleHref: string; links: { href: st
   );
 };
 
+const footerLinks = [
+  {
+    title: "Get Started",
+    titleHref: "/",
+    links: [
+      { href: "/services/resumewriting", text: "Create Resume" },
+      { href: "/pricing", text: "Pricing" },
+      { href: "/services", text: "Services" },
+      { href: "/privacy-policy", text: "Privacy & Terms" }
+    ]
+  },
+  {
+    title: "Resume",
+    titleHref: "/services",
+    links: [
+      { href: "/services/resumewriting", text: "Resume Writing" },
+      { href: "/services/resumerevamping", text: "Optimization" },
+      { href: "/services/resumerevamping", text: "Revamping" },
+      { href: "/services/resumewriting", text: "Pricing" }
+    ]
+  },
+  {
+    title: "Other Services",
+    titleHref: "/services",
+    links: [
+      { href: "/services/coverletterwriting", text: "Cover Letter" },
+      { href: "/services/coverletterwriting", text: "CL Revamping" },
+      { href: "/services/linkedinprofileoptimization", text: "LinkedIn Optimization" },
+      { href: "/services/jobapplicationassistance", text: "Application Assistance" }
+    ]
+  },
+  {
+    title: "Contacts",
+    titleHref: "/contact",
+    links: [
+      { href: "tel:+254795644422", text: "WhatsApp" },
+      { href: "mailto:nginamiriam2@gmail.com", text: "Email" },
+      { href: "https://www.instagram.com/cv91829?igsh=YzhmbXVjZzBienRz", text: "Instagram" },
+      { href: "https://www.facebook.com/profile.php?id=100094574041320", text: "Facebook" }
+    ]
+  }
+];
+
 const Footer: React.FC = () => {
   return (
     <footer className="text-cyan-800 py-6 px-4 md:px-6 mt-auto shadow-lg">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-        
-        <FooterCard 
-          title="Get Started"
-          titleHref="/"
-          links={[
-            { href: "/services/resumewriting", text: "Create Resume" },
-            { href: "/pricing", text: "Pricing" },
-            { href: "/services", text: "Services" },
-            { href: "/privacy-policy", text: "Privacy & Terms" }
-          ]}
-        />
-        
-        <FooterCard 
-          title="Resume"
-          titleHref="/services"
-          links={[
-            { href: "/services/resumewriting", text: "Resume Writing" },
-            { href: "/services/resumerevamping", text: "Optimization" },
-            { href: "/services/resumerevamping", text: "Revamping" },
-            { href: "/services/resumewriting", text: "Pricing" }
-          ]}
-        />
-        
-        <FooterCard 
-          title="Other Services"
-          titleHref="/services"
-          links={[
-            { href: "/services/coverletterwriting", text: "Cover Letter" },
-            { href: "/services/coverletterwriting", text: "CL Revamping" },
-            { href: "/services/linkedinprofileoptimization", text: "LinkedIn Optimization" },
-            { href: "/services/jobapplicationassistance", text: "Application Assistance" }
-          ]}
-        />
-        
-        <FooterCard 
-          title="Contacts"
-          titleHref="/contact"
-          links={[
-            { href: "tel:+254795644422", text: "WhatsApp" },
-            { href: "mailto:nginamiriam2@gmail.com", text: "Email" },
-            { href: "https://www.instagram.com/cv91829?igsh=YzhmbXVjZzBienRz", text: "Instagram" },
-            { href: "https://www.facebook.com/profile.php?id=100094574041320", text: "Facebook" }
-          ]}
-        />
-        
+        {footerLinks.map((card, index) => (
+          <FooterCard key={index} title={card.title} titleHref={card.titleHref} links={card.links} />
+        ))}
       </div>
 
       <div className="text-center mt-8">

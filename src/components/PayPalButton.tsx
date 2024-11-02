@@ -27,7 +27,7 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
 
   const handleOrderUpdate = async (transactionId: string) => {
     try {
-      const response = await fetch('/api/orders/update', {
+      const response = await fetch('/api/paypal/update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
