@@ -1,20 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ref, update, get } from 'firebase/database';
-import { db } from '@/lib/firebase'; // Adjust the import path to where your firebase file is located
+import { db } from '@/lib/firebaseAdmin'; // Adjust the import path to where your firebase file is located
 
 export async function POST(req: NextRequest) {
   try {
     const bodyText = await req.text();
     const body = JSON.parse(bodyText);
 
-    // Provide default values while destructuring to prevent the error
+    // Destructure with default values to prevent errors
     const { Body: { stkCallback } = { stkCallback: null } } = body;
 
     if (!stkCallback) {
       throw new Error('stkCallback is undefined');
     }
 
-    // Log the callback data for debugging
     console.log('M-Pesa Callback:', stkCallback);
 
     const { CheckoutRequestID, ResultCode, CallbackMetadata } = stkCallback;
@@ -29,8 +27,8 @@ export async function POST(req: NextRequest) {
       }
 
       // Retrieve the order path from the payment node
-      const paymentPath = `payments/${CheckoutRequestID}`;
-      const paymentSnapshot = await get(ref(db, paymentPath));
+      const paymentRef = db.ref(`payments/${CheckoutRequestID}`);
+      const paymentSnapshot = await paymentRef.once('value');
       const orderPath = paymentSnapshot.val()?.orderPath;
 
       if (!orderPath) {
@@ -38,14 +36,29 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, message: 'Order path not found' });
       }
 
-      // Update the order data in Firebase
-      await update(ref(db, orderPath), { transactionCode, paymentStatus: 'complete' });
+      // Update the order data in Firebase Admin
+      const orderRef = db.ref(orderPath);
+      const orderSnapshot = await orderRef.once('value');
+
+      if (!orderSnapshot.exists()) {
+        console.log('Order not found');
+        return NextResponse.json({ success: false, message: 'Order not found' });
+      }
+
+      const orderData = orderSnapshot.val();
+      const updatedOrderData = {
+        ...orderData,
+        transactionCode,
+        paymentStatus: 'complete',
+        paymentMethod: 'M-Pesa',
+      };
+
+      await orderRef.update(updatedOrderData);
 
       console.log(`Order ${orderPath} updated with transactionCode ${transactionCode}`);
 
-      // Redirect to the profile page on successful update
-      const redirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/profile`;
-      return NextResponse.redirect(redirectUrl);
+      // Return success response without redirection
+      return NextResponse.json({ success: true, message: 'Order updated successfully' });
     } else {
       console.log('Transaction failed or incomplete callback data');
       return NextResponse.json({ success: false, message: 'Transaction failed or incomplete callback data', data: stkCallback });

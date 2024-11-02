@@ -9,7 +9,6 @@ type PaymentButtonsProps = {
   userId: string;
   onSuccess: (details: any) => void;
   onError: (error: any) => void;
-  className?: string; // Add className prop
 };
 
 const PaymentButtons: React.FC<PaymentButtonsProps> = ({
@@ -19,10 +18,9 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
   userId,
   onSuccess,
   onError,
-  className = "", // Default to empty string if no className is provided
 }) => {
   return (
-    <div className={`flex flex-col sm:flex-row sm:justify-center gap-4 p-4 bg-white rounded-lg shadow-md ${className}`}>
+    <div className={`flex flex-col sm:flex-row sm:justify-center gap-4 p-4 bg-white rounded-lg`}>
       <PayPalButton
         amount={amount}
         orderId={orderId}

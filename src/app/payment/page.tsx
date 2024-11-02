@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { db, ref, get } from "@/lib/firebase"; // Ensure you have a Firebase client setup
+import { db, ref, get } from "@/lib/firebase";
 import PaymentButtons from "@/components/PaymentButtons";
 
 const PaymentPageComponent: React.FC = () => {
@@ -12,28 +12,39 @@ const PaymentPageComponent: React.FC = () => {
   const amount = parseFloat(searchParams.get("amount") || "0");
   const serviceTitle = searchParams.get("serviceTitle") || "Default Service Title";
   const userId = searchParams.get("userId") || "DefaultUserId";
-  const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
 
-  const handleSuccess = (details: any) => {
+  const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleSuccess = async (details: any) => {
     console.log("Payment initiated", details);
-    pollPaymentStatus();
+    // Fetch the payment status directly after initiating payment
+    const orderPath = `orders/${serviceTitle}/${userId}/${orderId}`;
+    setLoading(true);
+
+    try {
+      const snapshot = await get(ref(db, orderPath));
+      const orderData = snapshot.val();
+
+      if (orderData) {
+        const status = orderData.paymentStatus; // Assuming paymentStatus is the common field
+        if (status === "complete") {
+          setPaymentStatus("complete");
+        } else {
+          setPaymentStatus("pending");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching order data:", error);
+      setPaymentStatus("error"); // Set error status to inform user
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleError = (error: any) => {
     console.error("Payment error", error);
-  };
-
-  const pollPaymentStatus = () => {
-    const orderPath = `orders/${serviceTitle}/${userId}/${orderId}`;
-    const interval = setInterval(async () => {
-      const snapshot = await get(ref(db, orderPath));
-      const orderData = snapshot.val();
-      if (orderData && orderData.transactionCode) {
-        setPaymentStatus("complete");
-        clearInterval(interval);
-        router.push("/profile");
-      }
-    }, 3000);
+    // Optionally, provide user feedback on error
   };
 
   useEffect(() => {
@@ -52,7 +63,8 @@ const PaymentPageComponent: React.FC = () => {
         <p className="text-gray-800 font-semibold text-lg sm:text-xl lg:text-2xl mb-6">
           Total Price: ${amount.toFixed(2)}
         </p>
-        {/* Payment Buttons */}
+        {loading && <p className="text-gray-600">Checking payment status...</p>}
+        {paymentStatus === "error" && <p className="text-red-500">Error fetching payment status. Please try again.</p>}
         <div className="mt-8 flex flex-col items-center gap-8">
           <PaymentButtons
             amount={amount}

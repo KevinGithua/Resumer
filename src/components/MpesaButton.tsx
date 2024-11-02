@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 type MpesaButtonProps = {
   orderId: string;
@@ -25,6 +26,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [checkoutRequestId, setCheckoutRequestId] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
+  const router = useRouter();
 
   const normalizePhoneNumber = (number: string): string => {
     number = number.trim().replace(/\s+/g, '');
@@ -65,7 +67,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       });
       if (response.data.success) {
         setCheckoutRequestId(response.data.data.CheckoutRequestID);
-        console.log('CheckoutRequestID set, waiting for callback...');
+        setPaymentStatus("pending"); // Set payment status to pending when payment is initiated
       } else {
         throw new Error(response.data.message);
       }
@@ -77,45 +79,52 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       onError(new Error(errorMessage));
       setError(errorMessage);
     } finally {
-      setLoading(false);
+      // Keep loading as true until the payment status is confirmed
     }
   }, [orderId, amount, phoneNumber, serviceTitle, userId, onError]);
 
   useEffect(() => {
-    if (checkoutRequestId) {
-      const interval = setInterval(async () => {
-        console.log('Polling payment status...');
-        try {
-          const response = await axios.get(`/api/payments/status?checkoutRequestId=${checkoutRequestId}`);
-          const { status } = response.data;
+    const pollPaymentStatus = async (checkoutRequestId: string) => {
+      console.log('Polling payment status...');
+      try {
+        const response = await axios.get(`/api/payments/status?checkoutRequestId=${checkoutRequestId}`);
+        const data = response.data;
 
-          console.log('Payment status response:', response.data); // For debugging
+        console.log('Payment status response:', data); // For debugging
 
-          if (status === 'complete') {
-            clearInterval(interval);
-            setPaymentStatus("success");
-          } else if (status === 'failed') {
-            clearInterval(interval);
-            setPaymentStatus("failed");
-          }
-        } catch (err) {
-          console.error('Error fetching payment status:', err);
+        if (data.success && data.status === 'complete') {
+          setPaymentStatus("success");
+          console.log('Payment successful, redirecting...');
+          router.push("/profile");
+        } else if (data.success && data.status === 'pending') {
+          console.log('Payment still pending, will check again...');
+          setTimeout(() => pollPaymentStatus(checkoutRequestId), 5000); // Poll again after 5 seconds
+        } else {
+          setPaymentStatus("failed");
+          console.error('Payment failed or incomplete');
+          onError(new Error('Payment failed or incomplete'));
         }
-      }, 5000); // Updated interval to 5000ms (5 seconds)
+      } catch (err) {
+        console.error('Error fetching payment status:', err);
+        setPaymentStatus("error");
+        onError(new Error('Error fetching payment status'));
+      }
+    };
 
-      return () => clearInterval(interval); // Cleanup on unmount
+    if (checkoutRequestId) {
+      pollPaymentStatus(checkoutRequestId);
     }
-  }, [checkoutRequestId]);
+  }, [checkoutRequestId, router, onError]);
 
   useEffect(() => {
     if (paymentStatus === "success") {
       console.log('Payment successful, invoking onSuccess callback');
       onSuccess({ checkoutRequestId });
+      setLoading(false); // Stop loading once payment is confirmed successful
     } else if (paymentStatus === "failed") {
-      console.error('Payment failed, invoking onError callback');
-      onError(new Error('Payment failed or incomplete'));
+      setLoading(false); // Stop loading on failure as well
     }
-  }, [paymentStatus, checkoutRequestId, onSuccess, onError]);
+  }, [paymentStatus, checkoutRequestId, onSuccess]);
 
   return (
     <div className={`mpesa-button-container ${className} p-2 bg-white rounded-lg shadow-lg border border-gray-300`}>
