@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 
 type MpesaButtonProps = {
@@ -52,7 +52,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       return;
     }
     setError(null);
-    setLoading(true);
+    setLoading(true); // Start loading state
 
     try {
       const response = await axios.post('/api/mpesa/payment', {
@@ -64,7 +64,8 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       });
       
       if (response.data.success) {
-        pollPaymentStatus(orderId); // Start polling with order path
+        // Start polling with order path
+        pollPaymentStatus(orderId);
       } else {
         throw new Error(response.data.message);
       }
@@ -75,8 +76,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       console.error('Payment error:', errorMessage);
       onError(new Error(errorMessage));
       setError(errorMessage);
-    } finally {
-      setLoading(false);
+      setLoading(false); // Stop loading on error
     }
   }, [orderId, amount, phoneNumber, serviceTitle, userId, onError]);
 
@@ -85,9 +85,12 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       try {
         const response = await axios.get(`/api/mpesa/payment-status?orderId=${orderPath}&userId=${userId}&serviceTitle=${serviceTitle}`);
         
-        if (response.data.success && response.data.paymentStatus === 'complete') {
-          clearInterval(intervalId); // Stop polling as status is confirmed complete
-          onSuccess(); // Trigger onSuccess to handle redirection
+        if (response.data.success) {
+          if (response.data.paymentStatus === 'complete') {
+            clearInterval(intervalId); // Stop polling as status is confirmed complete
+            setLoading(false); // Stop loading
+            onSuccess(); 
+          }
         }
       } catch (error) {
         console.error('Error fetching payment status:', error);
