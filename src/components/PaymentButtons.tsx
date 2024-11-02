@@ -7,7 +7,7 @@ type PaymentButtonsProps = {
   orderId: string;
   serviceTitle: string;
   userId: string;
-  onSuccess: (details: any) => void;
+  onSuccess: () => void;
   onError: (error: any) => void;
 };
 

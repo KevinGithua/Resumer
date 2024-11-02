@@ -56,9 +56,8 @@ export async function POST(req: NextRequest) {
 
       console.log(`Order ${orderPath} updated with transactionCode ${transactionCode}`);
 
-      // Redirect to the profile page on successful update
-      const redirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/profile`;
-      return NextResponse.redirect(redirectUrl); // This will redirect to the profile page
+      // Send a response back to indicate success
+      return NextResponse.json({ success: true, message: 'Order updated successfully', checkoutRequestId: CheckoutRequestID });
     } else {
       console.log('Transaction failed or incomplete callback data');
       return NextResponse.json({ success: false, message: 'Transaction failed or incomplete callback data', data: stkCallback });

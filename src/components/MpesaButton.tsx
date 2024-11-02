@@ -1,13 +1,12 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
 
 type MpesaButtonProps = {
   orderId: string;
   amount: number;
   serviceTitle: string;
   userId: string;
-  onSuccess: (response: any) => void;
+  onSuccess: () => void;
   onError: (error: any) => void;
   className?: string;
 };
@@ -24,8 +23,6 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [checkoutRequestId, setCheckoutRequestId] = useState<string | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
 
   const normalizePhoneNumber = (number: string): string => {
     number = number.trim().replace(/\s+/g, '');
@@ -56,6 +53,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
     }
     setError(null);
     setLoading(true);
+
     try {
       const response = await axios.post('/api/mpesa/payment', {
         orderId,
@@ -64,9 +62,9 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
         serviceTitle,
         userId,
       });
+      
       if (response.data.success) {
-        setCheckoutRequestId(response.data.data.CheckoutRequestID);
-        setPaymentStatus("pending"); // Set payment status to pending when payment is initiated
+        pollPaymentStatus(orderId); // Start polling with order path
       } else {
         throw new Error(response.data.message);
       }
@@ -78,25 +76,34 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       onError(new Error(errorMessage));
       setError(errorMessage);
     } finally {
-      // Keep loading as true until the payment status is confirmed
+      setLoading(false);
     }
   }, [orderId, amount, phoneNumber, serviceTitle, userId, onError]);
 
+  const pollPaymentStatus = useCallback((orderPath: string) => {
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await axios.get(`/api/mpesa/payment-status?orderId=${orderPath}&userId=${userId}&serviceTitle=${serviceTitle}`);
+        
+        if (response.data.success && response.data.paymentStatus === 'complete') {
+          clearInterval(intervalId); // Stop polling as status is confirmed complete
+          onSuccess(); // Trigger onSuccess to handle redirection
+        }
+      } catch (error) {
+        console.error('Error fetching payment status:', error);
+      }
+    }, 5000); // Poll every 5 seconds
 
-  useEffect(() => {
-    if (paymentStatus === "success") {
-      console.log('Payment successful, invoking onSuccess callback');
-      onSuccess({ checkoutRequestId });
-      setLoading(false); // Stop loading once payment is confirmed successful
-    } else if (paymentStatus === "failed") {
-      setLoading(false); // Stop loading on failure as well
-    }
-  }, [paymentStatus, checkoutRequestId, onSuccess]);
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [onSuccess, userId, serviceTitle]);
 
   return (
     <div className={`mpesa-button-container ${className} p-2 bg-white rounded-lg shadow-lg border border-gray-300`}>
       <div className="mb-4">
-        <label htmlFor="phoneNumber" className="block text-gray-700 text-sm sm:text-base">For Mpesa enter Phone Number:</label>
+        <label htmlFor="phoneNumber" className="block text-gray-700 text-sm sm:text-base">
+          For Mpesa enter Phone Number:
+        </label>
         <input
           type="text"
           id="phoneNumber"
@@ -114,6 +121,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
         {loading ? 'Processing...' : 'Pay with M-Pesa'}
       </button>
       {error && <p className="text-red-600 mt-2">{error}</p>}
+      {loading && <p className="text-gray-500 mt-2">Processing your payment...</p>}
     </div>
   );
 };

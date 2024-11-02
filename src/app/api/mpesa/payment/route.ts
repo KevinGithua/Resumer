@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       PhoneNumber: phoneNumber,
       CallBackURL: callbackUrl,
       AccountReference: orderId,
-      TransactionDesc: `Payment for Order ID: ${orderId}`,
+      TransactionDesc: orderId,
     };
 
     console.log('Request data:', data);
