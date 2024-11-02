@@ -26,7 +26,6 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [checkoutRequestId, setCheckoutRequestId] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
-  const router = useRouter();
 
   const normalizePhoneNumber = (number: string): string => {
     number = number.trim().replace(/\s+/g, '');
@@ -83,38 +82,6 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
     }
   }, [orderId, amount, phoneNumber, serviceTitle, userId, onError]);
 
-  useEffect(() => {
-    const pollPaymentStatus = async (checkoutRequestId: string) => {
-      console.log('Polling payment status...');
-      try {
-        const response = await axios.get(`/api/payments/status?checkoutRequestId=${checkoutRequestId}`);
-        const data = response.data;
-
-        console.log('Payment status response:', data); // For debugging
-
-        if (data.success && data.status === 'complete') {
-          setPaymentStatus("success");
-          console.log('Payment successful, redirecting...');
-          router.push("/profile");
-        } else if (data.success && data.status === 'pending') {
-          console.log('Payment still pending, will check again...');
-          setTimeout(() => pollPaymentStatus(checkoutRequestId), 5000); // Poll again after 5 seconds
-        } else {
-          setPaymentStatus("failed");
-          console.error('Payment failed or incomplete');
-          onError(new Error('Payment failed or incomplete'));
-        }
-      } catch (err) {
-        console.error('Error fetching payment status:', err);
-        setPaymentStatus("error");
-        onError(new Error('Error fetching payment status'));
-      }
-    };
-
-    if (checkoutRequestId) {
-      pollPaymentStatus(checkoutRequestId);
-    }
-  }, [checkoutRequestId, router, onError]);
 
   useEffect(() => {
     if (paymentStatus === "success") {
