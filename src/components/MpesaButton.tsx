@@ -40,7 +40,6 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
     const phoneRegex = /^254[0-9]{9}$/;
     return phoneRegex.test(number);
   };
-  
 
   const pollPaymentStatus = useCallback((orderPath: string) => {
     const intervalId = setInterval(async () => {
@@ -74,7 +73,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
     }
     setError(null);
     setLoading(true);
-  
+
     try {
       const response = await axios.post('/api/mpesa/payment', {
         orderId,
