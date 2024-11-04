@@ -40,6 +40,27 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
     const phoneRegex = /^254[0-9]{9}$/;
     return phoneRegex.test(number);
   };
+  
+
+  const pollPaymentStatus = useCallback((orderPath: string) => {
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await axios.get(`/api/mpesa/payment-status?orderId=${orderPath}&userId=${userId}&serviceTitle=${serviceTitle}`);
+        
+        if (response.data.success) {
+          if (response.data.paymentStatus === 'complete') {
+            clearInterval(intervalId);
+            setLoading(false);
+            onSuccess(); 
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching payment status:', error);
+      }
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [onSuccess, userId, serviceTitle]);
 
   const initiateMpesaPayment = useCallback(async () => {
     if (!phoneNumber) {
@@ -53,7 +74,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
     }
     setError(null);
     setLoading(true);
-
+  
     try {
       const response = await axios.post('/api/mpesa/payment', {
         orderId,
@@ -77,27 +98,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       setError(errorMessage);
       setLoading(false);
     }
-  }, [orderId, amount, phoneNumber, serviceTitle, userId, onError]);
-
-  const pollPaymentStatus = useCallback((orderPath: string) => {
-    const intervalId = setInterval(async () => {
-      try {
-        const response = await axios.get(`/api/mpesa/payment-status?orderId=${orderPath}&userId=${userId}&serviceTitle=${serviceTitle}`);
-        
-        if (response.data.success) {
-          if (response.data.paymentStatus === 'complete') {
-            clearInterval(intervalId);
-            setLoading(false);
-            onSuccess(); 
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching payment status:', error);
-      }
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-  }, [onSuccess, userId, serviceTitle]);
+  }, [orderId, amount, phoneNumber, serviceTitle, userId, onError, pollPaymentStatus]);
 
   return (
     <div className={`mpesa-button-container ${className} p-2 bg-white rounded-lg shadow-lg border border-gray-300`}>

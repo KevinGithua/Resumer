@@ -1,7 +1,5 @@
 "use client";
-
 import { Suspense, useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Use this import for Next.js 13 app directory
 import ChatComponent from "@/components/ChatComponent";
 import { getAuth } from "firebase/auth";
 import { fetchOrderDetails, fetchUserDetails, uploadFile, submitLink, updateOrder, Order, User } from "@/utils/orderUtils";
