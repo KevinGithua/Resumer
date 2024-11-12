@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { auth, db as database } from "@/lib/firebase";
 import { ref, get } from "firebase/database";
 import { useRouter } from "next/navigation";
+import { formatTimestamp } from "@/utils/orderUtils";
 
 type Order = {
   serviceTitle: string;
@@ -67,11 +68,9 @@ const ProfilePage = () => {
         });
 
         setOrders(filteredOrders);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      } finally {
-        setLoadingOrders(false);
-      }
+      } 
+      catch (error) { console.error("Error fetching orders:", error); } 
+      finally { setLoadingOrders(false); }
     };
 
     const fetchUserDetails = async (userId: string) => {
@@ -82,11 +81,9 @@ const ProfilePage = () => {
         if (userSnapshot.exists()) {
           setUserDetails(userSnapshot.val());
         }
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      } finally {
-        setLoadingUserDetails(false);
-      }
+      } 
+      catch (error) { console.error("Error fetching user details:", error); } 
+      finally { setLoadingUserDetails(false);}
     };
 
     const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
@@ -94,9 +91,7 @@ const ProfilePage = () => {
         setUser(authUser);
         fetchOrders(authUser.uid);
         fetchUserDetails(authUser.uid);
-      } else {
-        setUser(null);
-      }
+      } else { setUser(null); }
     });
 
     return () => unsubscribe();
@@ -105,29 +100,21 @@ const ProfilePage = () => {
   const handleOrderClick = (orderId: string) => {
     // Pass the current user's name as a query parameter
     const userNameQuery = userDetails?.name ? `&userName=${encodeURIComponent(userDetails.name)}` : '';
-    router.push(`/order-details/${orderId}?admin=false${userNameQuery}`); // This correctly passes the admin parameter as a query
+    router.push(`/order-details/${orderId}?admin=false${userNameQuery}`);
   };
 
-  const formatTimestamp = (timestamp: string) => {
-    if (!timestamp || timestamp === "No Date Provided") return "No Date Provided";
-    const date = new Date(timestamp);
-    return date.toLocaleString();
-  };
 
-  const handleViewChange = (newView: 'available' | 'completed' | 'unpaid') => {
-    setView(newView);
-  };
+  const handleViewChange = (newView: 'available' | 'completed' | 'unpaid') => { setView(newView); };
 
   return (
     <div className="profile-page px-4 sm:px-6 lg:px-8 py-8 max-w-screen-lg mx-auto">
-      {/* User Details Section */}
       {loadingUserDetails ? (
         <div className="user-details mb-8 bg-white p-4 sm:p-6 rounded-lg shadow-lg">
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-cyan-800">Loading Profile...</h2>
           <p className="text-base sm:text-lg text-gray-600">Please wait while we fetch your details...</p>
         </div>
-      ) : (
-        userDetails && (
+      ) : 
+      ( userDetails && (
           <div className="user-details mb-8 bg-white p-4 sm:p-6 rounded-lg shadow-lg">
             <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-cyan-800">Your Profile</h2>
             <p className="text-base sm:text-lg text-gray-600 mb-2">
@@ -147,36 +134,27 @@ const ProfilePage = () => {
       )}
 
       {/* Orders Section */}
-      <h2 className="text-2xl sm:text-3xl font-semibold mb-6 text-cyan-800">
-        Your Orders
-      </h2>
+      <h2 className="text-2xl sm:text-3xl font-semibold mb-6 text-cyan-800"> Your Orders </h2>
+      
       <div className="flex justify-center space-x-4 mb-6">
         <button
           className={`py-2 px-4 rounded-lg border border-purple-600 text-purple-600 hover:bg-purple-400 hover:text-white transition-all duration-300 ${view === 'available' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800'}`}
           onClick={() => handleViewChange('available')}
-        >
-          Available Orders
-        </button>
+        > Available Orders </button>
         <button
           className={`py-2 px-4 rounded-lg border border-purple-600 text-purple-600 hover:bg-purple-400 hover:text-white transition-all duration-300 ${view === 'completed' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800'}`}
           onClick={() => handleViewChange('completed')}
-        >
-          Completed Orders
-        </button>
+        > Completed Orders </button>
         <button
           className={`py-2 px-4 rounded-lg border border-purple-600 text-purple-600 hover:bg-purple-400 hover:text-white transition-all duration-300 ${view === 'unpaid' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800'}`}
           onClick={() => handleViewChange('unpaid')}
-        >
-          Unpaid Orders
-        </button>
+        > Unpaid Orders </button>
       </div>
 
       <ul className="space-y-4">
-        {loadingOrders ? (
-          <p className="text-gray-600">Loading orders...</p>
-        ) : orders.length === 0 ? (
-          <p className="text-gray-600">No orders available</p>
-        ) : (
+        {loadingOrders ? ( <p className="text-gray-600">Loading orders...</p> ) : 
+        orders.length === 0 ? ( <p className="text-gray-600">No orders available</p> ) : 
+        (
           orders.map((order, index) => (
             <li key={index} className="bg-white p-4 rounded-lg shadow-md border border-gray-200 hover:border-cyan-500 transition-all duration-300">
               <button

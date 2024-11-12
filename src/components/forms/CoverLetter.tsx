@@ -7,7 +7,7 @@ interface CoverLetterWritingFormProps {
   amount: number; // Added for total price
   error: string | null; // Added for error messages
   loading: boolean; // Added for loading state
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void; // Added for form submission
+  onSubmit: (formData: any) => void; // Updated for form submission
 }
 
 const CoverLetterWritingForm: React.FC<CoverLetterWritingFormProps> = ({
@@ -19,41 +19,57 @@ const CoverLetterWritingForm: React.FC<CoverLetterWritingFormProps> = ({
   loading,
   onSubmit,
 }) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevent page refresh
+    onSubmit(formData); // Call the provided onSubmit handler with formData
+  };
+
   return (
     <form
-      className="relative max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6"
-      onSubmit={onSubmit}
+      className="relative max-w-3xl mx-auto bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg shadow-xl p-8"
+      onSubmit={handleSubmit}
     >
-      <h2 className="text-2xl text-teal-800 mb-6">Cover Letter Writing</h2>
-      <p className="mb-4">Create a compelling cover letter that complements your resume.</p>
+      <h2 className="text-3xl text-teal-800 font-semibold mb-6">Cover Letter Writing</h2>
+      <p className="mb-6 text-lg text-gray-600">Create a compelling cover letter that complements your resume and boosts your chances of success.</p>
 
-      <div className="mb-4">
-        <label className="block text-gray-700">Selected Categories</label>
-        <p className="border border-gray-300 rounded-md p-2">
+      {/* Categories Section */}
+      <div className="mb-6">
+        <label className="block text-gray-700 font-medium">Selected Categories</label>
+        <p className="border-2 border-teal-300 rounded-lg p-3 text-gray-700 bg-teal-50">
           {categories.length > 0 ? categories.join(", ") : "No categories selected"}
         </p>
       </div>
 
-      {error && <p className="text-red-600 mb-4">{error}</p>}
+      {/* Error Message */}
+      {error && <p className="text-red-600 mb-4 text-sm font-semibold">{error}</p>}
+
+      {/* Loading Overlay */}
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 text-white">
-          Uploading your details...
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 text-white rounded-lg">
+          <span className="text-xl font-semibold">Uploading your details...</span>
         </div>
       )}
 
-      <div className="mb-4">
-        <label htmlFor="existingCoverLetter" className="block text-gray-700 font-medium mb-1">Upload Existing Cover Letter</label>
+      {/* Existing Cover Letter */}
+      <div className="mb-6">
+        <label htmlFor="existingCoverLetter" className="block text-gray-700 font-medium mb-2">Upload Existing Cover Letter</label>
         <input
           type="file"
           id="existingCoverLetter"
           name="existingCoverLetter"
           onChange={onChange}
-          className="mt-1 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+          className="mt-1 w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
         />
+        {formData.existingCoverLetter && (
+          <a href={formData.existingCoverLetter} target="_blank" rel="noopener noreferrer" className="text-teal-600 text-sm mt-2 inline-block">
+            View uploaded cover letter
+          </a>
+        )}
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="jobApplyingFor" className="block text-gray-700 font-medium mb-1">Job Applying For</label>
+      {/* Job Applying For */}
+      <div className="mb-6">
+        <label htmlFor="jobApplyingFor" className="block text-gray-700 font-medium mb-2">Job Applying For</label>
         <input
           type="text"
           id="jobApplyingFor"
@@ -61,12 +77,13 @@ const CoverLetterWritingForm: React.FC<CoverLetterWritingFormProps> = ({
           value={formData.jobApplyingFor || ''}
           onChange={onChange}
           required
-          className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
         />
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="companyApplyingTo" className="block text-gray-700 font-medium mb-1">Company Applying To</label>
+      {/* Company Applying To */}
+      <div className="mb-6">
+        <label htmlFor="companyApplyingTo" className="block text-gray-700 font-medium mb-2">Company Applying To</label>
         <input
           type="text"
           id="companyApplyingTo"
@@ -74,27 +91,37 @@ const CoverLetterWritingForm: React.FC<CoverLetterWritingFormProps> = ({
           value={formData.companyApplyingTo || ''}
           onChange={onChange}
           required
-          className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
         />
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="existingResume" className="block text-gray-700 font-medium mb-1">Upload Existing Resume</label>
+      {/* Existing Resume */}
+      <div className="mb-6">
+        <label htmlFor="existingResume" className="block text-gray-700 font-medium mb-2">Upload Existing Resume</label>
         <input
           type="file"
           id="existingResume"
           name="existingResume"
           onChange={onChange}
           required
-          className="mt-1 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+          className="mt-1 w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
         />
+        {formData.existingResume && (
+          <a href={formData.existingResume} target="_blank" rel="noopener noreferrer" className="text-teal-600 text-sm mt-2 inline-block">
+            View uploaded resume
+          </a>
+        )}
       </div>
 
-      <p className="text-gray-800 font-semibold mb-6">Total Price: ${amount.toFixed(2)}</p>
+      {/* Total Price */}
+      <div className="mb-6">
+        <p className="text-lg font-semibold text-gray-800">Total Price: <span className="text-teal-600">${amount.toFixed(2)}</span></p>
+      </div>
 
+      {/* Submit Button */}
       <button
         type="submit"
-        className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-700 transition duration-200"
+        className="w-full py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-200"
       >
         Proceed to Pay
       </button>

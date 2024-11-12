@@ -5,6 +5,7 @@ import { ref, onValue, get } from 'firebase/database';
 import { db as database } from '@/lib/firebase';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { auth } from "@/lib/firebase"; // Import auth
+import { formatTimestamp } from '@/utils/orderUtils';
 
 type Order = {
   serviceTitle: string;
@@ -115,12 +116,6 @@ const AdminViewComponent = () => {
   const handleViewChange = (newView: 'available' | 'completed' | 'unpaid') => {
     setView(newView);
     router.push(`/admin?view=${newView}`);
-  };
-
-  const formatTimestamp = (timestamp: string) => {
-    if (!timestamp || timestamp === 'No Date Provided') return 'No Date Provided';
-    const date = new Date(timestamp);
-    return date.toLocaleString();
   };
 
   const handleOrderClick = (orderId: string) => {

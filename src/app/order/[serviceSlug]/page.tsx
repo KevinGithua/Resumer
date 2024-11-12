@@ -41,69 +41,58 @@ const OrderForm: React.FC<OrderFormProps> = ({ params }) => {
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, files } = e.target as HTMLInputElement;
-    setFormData((prev) => ({ ...prev, [name]: files ? files[0] : value }));
-
+  
     if (files && files[0]) {
       const file = files[0];
-      const fileRef = storageRef(storage, `orders/${file.name}`);
-
+      const fileRef = storageRef(storage, `${file.name}`);
+  
       try {
         setLoading(true);
+        // Upload the file to Firebase Storage
         await uploadBytes(fileRef, file);
+        // Get the file's URL from Firebase Storage
         const fileUrl = await getDownloadURL(fileRef);
+        // Update formData with the file URL
         setFormData((prev) => ({ ...prev, [name]: fileUrl }));
       } catch (uploadError) {
         setError("Error uploading file. Please try again.");
       } finally {
         setLoading(false);
       }
+    } else {
+      // Update formData with other input values
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
-  };
+  };  
 
-  const validateForm = (): boolean => {
-    const requiredFields = Object.keys(formData);
-    for (const field of requiredFields) {
-      if (!formData[field]) {
-        setError(`Please fill in the required field: ${field}`);
-        return false;
-      }
-    }
-    setError(null);
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      const user = auth.currentUser;
-      if (user) {
-        const userId = user.uid;
-        const orderPath = `/orders/${serviceSlug}/${userId}`;
-        const newOrderIdRef = push(ref(database, orderPath));
-        const newOrderId = newOrderIdRef.key || null;
-
-        if (newOrderId) {
-          const orderData: any = {
-            serviceTitle: serviceSlug,
-            pricingCategories: categories.length === 1 ? categories[0] : categories,
-            price: amount,
-            timestamp: new Date().toISOString(),
-            paymentStatus: "pending",
-            completed: false,
-            ...formData,
-          };
-
-          try {
-            await set(ref(database, `${orderPath}/${newOrderId}`), orderData);
-            router.push(`/payment?orderId=${newOrderId}&amount=${amount}&serviceTitle=${serviceSlug}&userId=${userId}`);
-          } catch (error) {
-            setError("Error saving order data. Please try again.");
-          }
+  const handleSubmit = async (formData: any) => {
+    if (auth.currentUser) {
+      const userId = auth.currentUser.uid;
+      const orderPath = `/orders/${serviceSlug}/${userId}`;
+      const newOrderIdRef = push(ref(database, orderPath));
+      const newOrderId = newOrderIdRef.key || null;
+  
+      if (newOrderId) {
+        const orderData = {
+          serviceTitle: serviceSlug,
+          pricingCategories: categories.length === 1 ? categories[0] : categories,
+          price: amount,
+          timestamp: new Date().toISOString(),
+          paymentStatus: "pending",
+          completed: false,
+          ...formData, // This will include all fields like `contact`, `education`, `experience`, `skills`, `references`
+        };
+  
+        try {
+          await set(ref(database, `${orderPath}/${newOrderId}`), orderData);
+          router.push(`/payment?orderId=${newOrderId}&amount=${amount}&serviceTitle=${serviceSlug}&userId=${userId}`);
+        } catch (error) {
+          setError("Error saving order data. Please try again.");
         }
       }
     }
   };
+  
 
   if (!SelectedForm) {
     return <div className="text-center text-red-600">Service not found</div>;

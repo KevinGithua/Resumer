@@ -4,6 +4,7 @@ import { ref, get, update } from "firebase/database";
 import { storage } from "@/lib/firebase";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
+// Define types for Order and User
 export type Order = {
   serviceTitle: string;
   orderId: string;
@@ -13,6 +14,36 @@ export type Order = {
   finishedWork?: string;
   completed: boolean;
   paymentStatus: string;
+
+  // New fields for Resume Revamping
+  contact: {
+    fullName: string;
+    email: string;
+    phone: string;
+  };
+  education: {
+    institution: string;
+    degree: string;
+    startYear: string;
+    endYear: string;
+  }[];
+  experience: {
+    company: string;
+    title: string;
+    startYear: string;
+    endYear: string;
+    description: string;
+  }[];
+  skills: string[];
+  references: {
+    name: string;
+    relationship: string;
+    contact: string;
+  }[];
+  resumeFile: File | null; // Store the resume file object
+  additionalNotes?: string;
+
+  // Optional for flexibility
   [key: string]: any;
 };
 
@@ -20,6 +51,23 @@ export type User = {
   name: string;
   email: string;
   phoneNumber: string;
+};
+
+// Extract filename from a URL or File object with enhanced style
+export const extractFilenameFromUrl = (file: File | string | null): string => {
+  if (!file) return "No file provided";
+
+  let filename = "";
+  
+  if (typeof file === "string") {
+    // Decode URL-encoded string (e.g., %20 -> space)
+    filename = decodeURIComponent(file.split('/').pop()?.split('?')[0] || "No file provided");
+  } else {
+    // If it's a File object, directly extract the name
+    filename = file.name;
+  }
+
+  return filename;
 };
 
 // Fetch order details by orderId
@@ -83,4 +131,11 @@ export const uploadFile = async (file: File, orderId: string, order: Order, data
 // Submit a link for the order
 export const submitLink = async (link: string, order: Order, database: any) => {
   await updateOrder(order, { finishedWork: link }, database);
+};
+
+// Format timestamp for display
+export const formatTimestamp = (timestamp: string) => {
+  if (!timestamp || timestamp === "No Date Provided") return "No Date Provided";
+  const date = new Date(timestamp);
+  return date.toLocaleString();
 };

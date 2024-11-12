@@ -1,189 +1,354 @@
 import React, { useState } from 'react';
 
-interface ResumeWritingFormProps {
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  formData: { [key: string]: any };
-  categories: string[];
-  amount: number;
-  error: string | null;
+type ResumeRevampingFormProps = {
+  onSubmit: (formData: any) => void;
   loading: boolean;
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-}
+  error: string | null;
+};
 
-const ResumeWritingForm: React.FC<ResumeWritingFormProps> = ({
-  onChange,
-  formData,
-  categories,
-  amount,
-  error,
-  loading,
-  onSubmit,
-}) => {
-  const [educationGroups, setEducationGroups] = useState<{ title: string; isOpen: boolean }[]>([]);
-  const [workExperienceGroups, setWorkExperienceGroups] = useState<{ title: string; isOpen: boolean }[]>([]);
-  const [referenceGroups, setReferenceGroups] = useState<{ title: string; isOpen: boolean }[]>([]);
+type EducationEntry = {
+  institution: string;
+  degree: string;
+  startYear: string;
+  endYear: string;
+};
 
-  const addGroup = (type: string) => {
-    const newGroup = {
-      title: `${type} ${
-        type === 'Achievement' ? educationGroups.length + 1 : type === 'Experience' ? workExperienceGroups.length + 1 : referenceGroups.length + 1
-      }`,
-      isOpen: true,
+type ExperienceEntry = {
+  company: string;
+  title: string;
+  startYear: string;
+  endYear: string;
+  description: string;
+};
+
+type ReferenceEntry = {
+  name: string;
+  relationship: string;
+  contact: string;
+};
+
+const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loading, error }) => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    skills: ''
+  });
+
+  const [education, setEducation] = useState<EducationEntry[]>([{ institution: '', degree: '', startYear: '', endYear: '' }]);
+  const [experience, setExperience] = useState<ExperienceEntry[]>([{ company: '', title: '', startYear: '', endYear: '', description: '' }]);
+  const [references, setReferences] = useState<ReferenceEntry[]>([{ name: '', relationship: '', contact: '' }]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleEducationChange = (index: number, field: keyof EducationEntry, value: string) => {
+    const updatedEducation = [...education];
+    updatedEducation[index][field] = value;
+    setEducation(updatedEducation);
+  };
+
+  const addEducationEntry = () => setEducation([...education, { institution: '', degree: '', startYear: '', endYear: '' }]);
+  const removeEducationEntry = (index: number) => setEducation(education.filter((_, i) => i !== index));
+
+  const handleExperienceChange = (index: number, field: keyof ExperienceEntry, value: string) => {
+    const updatedExperience = [...experience];
+    updatedExperience[index][field] = value;
+    setExperience(updatedExperience);
+  };
+
+  const addExperienceEntry = () => setExperience([...experience, { company: '', title: '', startYear: '', endYear: '', description: '' }]);
+  const removeExperienceEntry = (index: number) => setExperience(experience.filter((_, i) => i !== index));
+
+  const handleReferenceChange = (index: number, field: keyof ReferenceEntry, value: string) => {
+    const updatedReferences = [...references];
+    updatedReferences[index][field] = value;
+    setReferences(updatedReferences);
+  };
+
+  const addReferenceEntry = () => setReferences([...references, { name: '', relationship: '', contact: '' }]);
+  const removeReferenceEntry = (index: number) => setReferences(references.filter((_, i) => i !== index));
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const structuredData = {
+      contact: { fullName: formData.fullName, email: formData.email, phone: formData.phone },
+      skills: formData.skills.split(',').map((skill) => skill.trim()),
+      education,
+      experience,
+      references
     };
-    if (type === 'Achievement') setEducationGroups([...educationGroups, newGroup]);
-    else if (type === 'Experience') setWorkExperienceGroups([...workExperienceGroups, newGroup]);
-    else setReferenceGroups([...referenceGroups, newGroup]);
-  };
 
-  const toggleGroup = (type: string, index: number) => {
-    const toggleFunction = (groups: any) =>
-      groups.map((group: any, i: number) => (i === index ? { ...group, isOpen: !group.isOpen } : group));
-    if (type === 'Achievement') setEducationGroups(toggleFunction(educationGroups));
-    else if (type === 'Experience') setWorkExperienceGroups(toggleFunction(workExperienceGroups));
-    else setReferenceGroups(toggleFunction(referenceGroups));
+    onSubmit(structuredData);
   };
-
-  const renderGroupFields = (groupType: string, index: number, fields: any[]) => (
-    <fieldset className="mt-2 p-4 border border-gray-300 rounded-lg bg-gray-50">
-      <legend className="text-lg font-medium text-gray-800 mb-2">{`${groupType} ${index + 1}`}</legend>
-      {fields.map(({ id, label, isTextarea }: any) => (
-        <div className="mb-4" key={id}>
-          <label htmlFor={id} className="block text-gray-700 font-medium mb-1">
-            {label}
-          </label>
-          {isTextarea ? (
-            <textarea
-              id={id}
-              name={id}
-              required
-              value={formData[id] || ''}
-              onChange={onChange}
-              className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
-              rows={4}
-            ></textarea>
-          ) : (
-            <input
-              type="text"
-              id={id}
-              name={id}
-              required
-              value={formData[id] || ''}
-              onChange={onChange}
-              className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
-            />
-          )}
-        </div>
-      ))}
-    </fieldset>
-  );
 
   return (
-    <form
-      className="relative max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6"
-      onSubmit={(e) => {
-        e.preventDefault(); // Prevents page refresh
-        onSubmit(e); // Passes event to parent handler
-      }}
-    >
-      <h2 className="text-2xl text-teal-800 mb-6">Order Resume Writing</h2>
+    <form onSubmit={handleFormSubmit} className="relative max-w-3xl mx-auto bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg shadow-xl p-8">
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 text-white">
+          <p>Submitting...</p>
+        </div>
+      )}
+      <h2 className="text-2xl text-teal-800 font-semibold">Create Your Resume</h2>
+
+      {/* Contact Information */}
+      <div className="mb-4">
+        <label htmlFor="fullName" className="block text-gray-700 font-medium">Full Name</label>
+        <input
+          type="text"
+          name="fullName"
+          id="fullName"
+          placeholder="Enter your full name"
+          value={formData.fullName}
+          onChange={handleInputChange}
+          required
+          className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+        />
+      </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700">Selected Categories</label>
-        <p className="border border-gray-300 rounded-md p-2">
-          {categories.length > 0 ? categories.join(', ') : 'No categories selected'}
-        </p>
+        <label htmlFor="email" className="block text-gray-700 font-medium">Email</label>
+        <input
+          type="email"
+          name="email"
+          id="email"
+          placeholder="Enter your email"
+          value={formData.email}
+          onChange={handleInputChange}
+          required
+          className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+        />
       </div>
 
-      {/* Contacts Section */}
-      <h3 className="text-lg font-medium text-gray-800 mb-2">Contacts</h3>
-      {[
-        { id: 'fullName', label: 'Full Name', type: 'text' },
-        { id: 'phone', label: 'Phone No', type: 'text' },
-        { id: 'email', label: 'Email', type: 'email' },
-        { id: 'address', label: 'Address', type: 'text' },
-      ].map(({ id, label, type }) => (
-        <div className="mb-4" key={id}>
-          <label htmlFor={id} className="block text-gray-700 font-medium mb-1">
-            {label}
-          </label>
-          <input
-            type={type}
-            id={id}
-            name={id}
-            required
-            value={formData[id] || ''}
-            onChange={onChange}
-            className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
-          />
-        </div>
-      ))}
+      <div className="mb-4">
+        <label htmlFor="phone" className="block text-gray-700 font-medium">Phone Number</label>
+        <input
+          type="tel"
+          name="phone"
+          id="phone"
+          placeholder="Enter your phone number"
+          value={formData.phone}
+          onChange={handleInputChange}
+          required
+          className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+        />
+      </div>
 
-      {/* Group Sections */}
-      {[
-        {
-          title: 'Education Achievements',
-          type: 'Achievement',
-          groups: educationGroups,
-          fields: [
-            { id: 'educationInstitution', label: 'Institution' },
-            { id: 'yearOfCompletion', label: 'Year of Completion' },
-            { id: 'courseCertification', label: 'Course/Certification' },
-          ],
-        },
-        {
-          title: 'Work Experience',
-          type: 'Experience',
-          groups: workExperienceGroups,
-          fields: [
-            { id: 'experienceInstitution', label: 'Institution' },
-            { id: 'startDate', label: 'Start Date' },
-            { id: 'endDate', label: 'End Date' },
-            { id: 'position', label: 'Position' },
-            { id: 'roles', label: 'Responsibilities/Roles', isTextarea: true },
-          ],
-        },
-        {
-          title: 'References',
-          type: 'Reference',
-          groups: referenceGroups,
-          fields: [
-            { id: 'referenceName', label: 'Name' },
-            { id: 'referenceContact', label: 'Contact Info' },
-            { id: 'referenceRelationship', label: 'Relationship' },
-          ],
-        },
-      ].map(({ title, type, groups, fields }) => (
-        <div className="mb-4" key={type}>
-          <h3 className="text-lg font-medium text-gray-800 mb-2">{title}</h3>
-          {groups.map((group, index) => (
-            <div key={index} className="mt-4">
-              <button type="button" onClick={() => toggleGroup(type, index)} className="text-teal-600 hover:underline">
-                {group.isOpen ? 'Collapse' : 'Expand'} {group.title}
+      {/* Skills Section */}
+      <div className="mb-4">
+        <label htmlFor="skills" className="block text-gray-700 font-medium">Skills</label>
+        <input
+          type="text"
+          name="skills"
+          id="skills"
+          placeholder="Enter your skills, separated by commas"
+          value={formData.skills}
+          onChange={handleInputChange}
+          required
+          className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+        />
+      </div>
+
+      {/* Education Section */}
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold">Education</h3>
+        {education.map((edu, index) => (
+          <div key={index} className="space-y-2 mb-4">
+            <label htmlFor={`institution-${index}`} className="block text-gray-700">Institution</label>
+            <input
+              type="text"
+              id={`institution-${index}`}
+              value={edu.institution}
+              onChange={(e) => handleEducationChange(index, 'institution', e.target.value)}
+              placeholder="Enter your institution"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <label htmlFor={`degree-${index}`} className="block text-gray-700">Degree</label>
+            <input
+              type="text"
+              id={`degree-${index}`}
+              value={edu.degree}
+              onChange={(e) => handleEducationChange(index, 'degree', e.target.value)}
+              placeholder="Enter your degree"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <label htmlFor={`startYear-${index}`} className="block text-gray-700">Start Year</label>
+            <input
+              type="text"
+              id={`startYear-${index}`}
+              value={edu.startYear}
+              onChange={(e) => handleEducationChange(index, 'startYear', e.target.value)}
+              placeholder="Enter start year"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <label htmlFor={`endYear-${index}`} className="block text-gray-700">End Year</label>
+            <input
+              type="text"
+              id={`endYear-${index}`}
+              value={edu.endYear}
+              onChange={(e) => handleEducationChange(index, 'endYear', e.target.value)}
+              placeholder="Enter end year"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <div className="flex justify-between mt-2">
+              {education.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeEducationEntry(index)}
+                  className="text-red-600"
+                >
+                  Remove
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={addEducationEntry}
+                className="text-teal-600"
+              >
+                Add Another Education
               </button>
-              {group.isOpen && renderGroupFields(type, index, fields)}
             </div>
-          ))}
-          <button type="button" onClick={() => addGroup(type)} className="mt-2 text-teal-600 hover:underline">
-            Add {title}
-          </button>
-        </div>
-      ))}
-
-      {error && <p className="text-red-500">{error}</p>}
-      <div className="mt-6">
-        <h3 className="text-xl font-bold">Total Amount: ${amount}</h3>
+          </div>
+        ))}
       </div>
+
+      {/* Experience Section */}
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold">Experience</h3>
+        {experience.map((exp, index) => (
+          <div key={index} className="space-y-2 mb-4">
+            <label htmlFor={`company-${index}`} className="block text-gray-700">Company</label>
+            <input
+              type="text"
+              id={`company-${index}`}
+              value={exp.company}
+              onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
+              placeholder="Enter company name"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <label htmlFor={`title-${index}`} className="block text-gray-700">Title</label>
+            <input
+              type="text"
+              id={`title-${index}`}
+              value={exp.title}
+              onChange={(e) => handleExperienceChange(index, 'title', e.target.value)}
+              placeholder="Enter your job title"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <label htmlFor={`startYearExp-${index}`} className="block text-gray-700">Start Year</label>
+            <input
+              type="text"
+              id={`startYearExp-${index}`}
+              value={exp.startYear}
+              onChange={(e) => handleExperienceChange(index, 'startYear', e.target.value)}
+              placeholder="Enter start year"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <label htmlFor={`endYearExp-${index}`} className="block text-gray-700">End Year</label>
+            <input
+              type="text"
+              id={`endYearExp-${index}`}
+              value={exp.endYear}
+              onChange={(e) => handleExperienceChange(index, 'endYear', e.target.value)}
+              placeholder="Enter end year"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <label htmlFor={`description-${index}`} className="block text-gray-700">Description</label>
+            <textarea
+              id={`description-${index}`}
+              value={exp.description}
+              onChange={(e) => handleExperienceChange(index, 'description', e.target.value)}
+              placeholder="Describe your responsibilities"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            ></textarea>
+            <div className="flex justify-between mt-2">
+              {experience.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeExperienceEntry(index)}
+                  className="text-red-600"
+                >
+                  Remove
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={addExperienceEntry}
+                className="text-teal-600"
+              >
+                Add Another Experience
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* References Section */}
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold">References</h3>
+        {references.map((ref, index) => (
+          <div key={index} className="space-y-2 mb-4">
+            <label htmlFor={`name-${index}`} className="block text-gray-700">Name</label>
+            <input
+              type="text"
+              id={`name-${index}`}
+              value={ref.name}
+              onChange={(e) => handleReferenceChange(index, 'name', e.target.value)}
+              placeholder="Enter reference name"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <label htmlFor={`relationship-${index}`} className="block text-gray-700">Relationship</label>
+            <input
+              type="text"
+              id={`relationship-${index}`}
+              value={ref.relationship}
+              onChange={(e) => handleReferenceChange(index, 'relationship', e.target.value)}
+              placeholder="Enter relationship with reference"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <label htmlFor={`contact-${index}`} className="block text-gray-700">Contact</label>
+            <input
+              type="text"
+              id={`contact-${index}`}
+              value={ref.contact}
+              onChange={(e) => handleReferenceChange(index, 'contact', e.target.value)}
+              placeholder="Enter reference contact"
+              className="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <div className="flex justify-between mt-2">
+              {references.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeReferenceEntry(index)}
+                  className="text-red-600"
+                >
+                  Remove
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={addReferenceEntry}
+                className="text-teal-600"
+              >
+                Add Another Reference
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <button
         type="submit"
-        className={`bg-green-500 text-white font-semibold py-2 px-4 rounded transition duration-200 hover:bg-green-600 focus:outline-none ${
-          loading ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
+        className="w-full py-3 bg-teal-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
         disabled={loading}
       >
-        {loading ? 'Submitting...' : 'Submit'}
+        {loading ? "Submitting..." : "Submit"}
       </button>
     </form>
   );
 };
 
-export default ResumeWritingForm;
+export default ResumeRevampingForm;
