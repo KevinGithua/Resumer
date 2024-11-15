@@ -30,20 +30,24 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
   const messageListenerRef = useRef<((snapshot: any) => void) | null>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
 
-  // Fetching and setting the adminName and clientName when chat starts or updates
+  // Fetch chat names and ensure chat data exists
   useEffect(() => {
     const fetchNames = async () => {
       try {
         const chatRef = ref(database, `/chats/${orderId}/chatData`);
-
-        // Get chat data to retrieve admin and client names
         const snapshot = await get(chatRef);
+
         if (snapshot.exists()) {
           const chatData = snapshot.val();
           setAdminName(chatData.admin);
           setClientName(chatData.client);
         } else {
-          await setChatData();
+          // Ensure chat data is set at least once
+          const chatDataRef = ref(database, `/chats/${orderId}/chatData`);
+          await set(chatDataRef, {
+            admin: admin === "true" ? userId : adminName,
+            client: admin === "false" ? userId : clientName,
+          });
         }
       } catch (error) {
         setError("Failed to fetch names.");
@@ -51,18 +55,18 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
     };
 
     fetchNames();
-  }, [orderId]);
+  }, [orderId, admin, userId, adminName, clientName]);
 
+  // Set display name based on role
   useEffect(() => {
     if (admin === "true") {
-      setDisplayName(clientName)
-      setChatData()
-    } else if(admin === "false") {
-      setDisplayName(adminName)
-      setChatData()
+      setDisplayName(clientName);
+    } else if (admin === "false") {
+      setDisplayName(adminName);
     }
-  }, [admin, clientName, adminName, setDisplayName]);
+  }, [admin, clientName, adminName]);
 
+  // Listen for new chat messages
   useEffect(() => {
     const messagesRef = ref(database, `/chats/${orderId}/messageData`);
 
@@ -83,12 +87,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
     };
   }, [orderId]);
 
+  // Scroll to the latest message
   useEffect(() => {
     if (messagesEndRef.current && chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [messages]);
 
+  // Send a new message
   const sendMessage = async () => {
     if (newMessage.trim()) {
       setLoading(true);
@@ -111,20 +117,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
     } else {
       setError("Message cannot be empty."); // Error for empty message
     }
-  };
-
-  // Function to update chatData (adminName and clientName)
-  const setChatData = async () => {
-    if (admin === "true") {
-      setAdminName(userId)
-    } else if(admin === "false") {
-      setClientName(userId)
-    }
-    const chatDataRef = ref(database, `/chats/${orderId}/chatData`);
-    await set(chatDataRef, {
-      admin: adminName,
-      client: clientName,
-    });
   };
 
   return (
@@ -159,7 +151,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
             >
               <p>{msg.message}</p>
               <span className="text-xs text-gray-500 absolute bottom-2 right-3">
-                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </span>
             </div>
           </div>
