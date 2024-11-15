@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { ref, push, onChildAdded, off, get, set } from "firebase/database";
+import { ref, push, onChildAdded, off, get, set, update } from "firebase/database";
 import { db as database } from "@/lib/firebase";
 import { AiOutlineSend } from "react-icons/ai";
 import { FaExclamationTriangle } from "react-icons/fa";
@@ -30,9 +30,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
   const messageListenerRef = useRef<((snapshot: any) => void) | null>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
 
-  // Fetch chat names and ensure chat data exists
+  // Fetch or update chat data when the component is opened
   useEffect(() => {
-    const fetchNames = async () => {
+    const fetchOrUpdateChatData = async () => {
       try {
         const chatRef = ref(database, `/chats/${orderId}/chatData`);
         const snapshot = await get(chatRef);
@@ -41,23 +41,33 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
           const chatData = snapshot.val();
           setAdminName(chatData.admin);
           setClientName(chatData.client);
+
+          // Update the user's name in Firebase
+          const updatedData = admin === "true" ? { admin: userId } : { client: userId };
+          await update(chatRef, updatedData);
+
+          // Update the local state as well
+          if (admin === "true") setAdminName(userId);
+          else setClientName(userId);
         } else {
-          // Ensure chat data is set at least once
-          const chatDataRef = ref(database, `/chats/${orderId}/chatData`);
-          await set(chatDataRef, {
-            admin: admin === "true" ? userId : adminName,
-            client: admin === "false" ? userId : clientName,
-          });
+          // Initialize chat data if it doesn't exist
+          const initialData = {
+            admin: admin === "true" ? userId : "Admin",
+            client: admin === "false" ? userId : "Client",
+          };
+          await set(chatRef, initialData);
+          setAdminName(initialData.admin);
+          setClientName(initialData.client);
         }
       } catch (error) {
-        setError("Failed to fetch names.");
+        setError("Failed to fetch or update chat data.");
       }
     };
 
-    fetchNames();
-  }, [orderId, admin, userId, adminName, clientName]);
+    fetchOrUpdateChatData();
+  }, [orderId, admin, userId]);
 
-  // Set display name based on role
+  // Set the display name based on the user's role
   useEffect(() => {
     if (admin === "true") {
       setDisplayName(clientName);
@@ -100,14 +110,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
       setLoading(true);
       setError(null); // Clear any previous errors
       try {
-        // Push the message to the Firebase 'messageData' node
         const messageRef = ref(database, `/chats/${orderId}/messageData`);
         await push(messageRef, {
           sender: userId,
           message: newMessage,
           timestamp: new Date().toISOString(),
         });
-
         setNewMessage(""); // Clear the input field after sending
       } catch (error) {
         setError("Failed to send message. Please try again."); // Set error message
