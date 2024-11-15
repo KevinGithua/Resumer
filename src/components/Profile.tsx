@@ -97,11 +97,15 @@ const ProfilePage = () => {
     return () => unsubscribe();
   }, [view]);
 
+
   const handleOrderClick = (orderId: string) => {
-    // Pass the current user's name as a query parameter
-    const userNameQuery = userDetails?.name ? `&userName=${encodeURIComponent(userDetails.name)}` : '';
-    router.push(`/order-details/${orderId}?admin=false${userNameQuery}`);
+    const userQueryParams = new URLSearchParams({
+      admin: "false", 
+    });
+  
+    router.push(`/order-details/${orderId}?${userQueryParams.toString()}`);
   };
+  
 
 
   const handleViewChange = (newView: 'available' | 'completed' | 'unpaid') => { setView(newView); };

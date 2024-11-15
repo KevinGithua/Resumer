@@ -27,13 +27,10 @@ body {
 
 nav {
   background-color: var(--background-rgb);
-  min-height: 64px; /* Set the minimum height of the navbar */
+  height: 64px; 
+  
 }
 
-/* Ensure the nav can grow on larger screens */
-nav {
-  height: auto; /* Allow height to adjust based on content */
-}
 
 /* Headings */
 h1 {

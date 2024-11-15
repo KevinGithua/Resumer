@@ -1,4 +1,6 @@
-// src/app/admin/page.tsx
+
+"use client"
+
 import AdminView from '@/components/AdminView';
 
 const AdminPage = () => {

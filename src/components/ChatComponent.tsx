@@ -1,6 +1,9 @@
+"use client";
 import { useEffect, useState, useRef } from "react";
-import { ref, push, onChildAdded, off } from "firebase/database";
+import { ref, push, onChildAdded, off, get, set } from "firebase/database";
 import { db as database } from "@/lib/firebase";
+import { AiOutlineSend } from "react-icons/ai";
+import { FaExclamationTriangle } from "react-icons/fa";
 
 type ChatMessage = {
   sender: string;
@@ -12,20 +15,56 @@ type ChatMessage = {
 type ChatComponentProps = {
   userId: string; // Current user ID
   orderId: string;
-  otherParty?: string; // Allow undefined
+  admin: string; // admin flag ("true" or "false")
 };
 
-const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, otherParty = "Unknown" }) => {
+const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [newMessage, setNewMessage] = useState<string>("");
+  const [newMessage, setNewMessage] = useState<string>(""); 
+  const [adminName, setAdminName] = useState<string>("Admin");
+  const [clientName, setClientName] = useState<string>("Client");
+  const [displayName, setDisplayName] = useState<string>(""); // Track the display name
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null); // Error state
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageListenerRef = useRef<((snapshot: any) => void) | null>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
 
+  // Fetching and setting the adminName and clientName when chat starts or updates
   useEffect(() => {
-    const messagesRef = ref(database, `/chats/${orderId}`);
+    const fetchNames = async () => {
+      try {
+        const chatRef = ref(database, `/chats/${orderId}/chatData`);
+
+        // Get chat data to retrieve admin and client names
+        const snapshot = await get(chatRef);
+        if (snapshot.exists()) {
+          const chatData = snapshot.val();
+          setAdminName(chatData.admin);
+          setClientName(chatData.client);
+        } else {
+          await setChatData();
+        }
+      } catch (error) {
+        setError("Failed to fetch names.");
+      }
+    };
+
+    fetchNames();
+  }, [orderId]);
+
+  useEffect(() => {
+    if (admin === "true") {
+      setDisplayName(clientName)
+      setChatData()
+    } else if(admin === "false") {
+      setDisplayName(adminName)
+      setChatData()
+    }
+  }, [admin, clientName, adminName, setDisplayName]);
+
+  useEffect(() => {
+    const messagesRef = ref(database, `/chats/${orderId}/messageData`);
 
     const handleNewMessage = (snapshot: any) => {
       const message: ChatMessage = snapshot.val();
@@ -55,12 +94,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, otherPar
       setLoading(true);
       setError(null); // Clear any previous errors
       try {
-        const messageRef = ref(database, `/chats/${orderId}`);
+        // Push the message to the Firebase 'messageData' node
+        const messageRef = ref(database, `/chats/${orderId}/messageData`);
         await push(messageRef, {
           sender: userId,
           message: newMessage,
           timestamp: new Date().toISOString(),
         });
+
         setNewMessage(""); // Clear the input field after sending
       } catch (error) {
         setError("Failed to send message. Please try again."); // Set error message
@@ -72,33 +113,52 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, otherPar
     }
   };
 
+  // Function to update chatData (adminName and clientName)
+  const setChatData = async () => {
+    if (admin === "true") {
+      setAdminName(userId)
+    } else if(admin === "false") {
+      setClientName(userId)
+    }
+    const chatDataRef = ref(database, `/chats/${orderId}/chatData`);
+    await set(chatDataRef, {
+      admin: adminName,
+      client: clientName,
+    });
+  };
+
   return (
-    <div className="chat-box px-2 py-4 bg-white rounded-lg shadow-lg h-full flex flex-col">
+    <div className="chat-box px-4 py-6 bg-gradient-to-b from-teal-50 to-teal-100 rounded-lg h-full flex flex-col">
       {/* Error Message */}
       {error && (
-        <div className="bg-red-100 text-red-600 p-2 rounded-lg mb-2">
+        <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-3 flex items-center">
+          <FaExclamationTriangle className="text-xl mr-2" />
           {error}
         </div>
       )}
 
       {/* Top bar showing the other party's identity */}
-      <div className="bg-cyan-600 text-white p-3 rounded-t-lg shadow-md mb-2 flex items-center">
-        <span className="text-lg font-semibold">{userId}</span>
+      <div className="bg-teal-400 text-white p-4 rounded-t-lg shadow-md mb-4 flex items-center justify-between">
+        <span className="text-sm text-teal-200">{displayName}</span>
       </div>
 
       {/* Chat messages */}
       <div
         ref={chatBoxRef}
-        className="messages flex-1 overflow-y-auto p-2 space-y-4 bg-white rounded-lg shadow-inner"
+        className="messages flex-1 overflow-y-auto p-3 space-y-5 rounded-lg shadow-inner transition-all duration-300 ease-in-out"
       >
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`message p-2 flex ${msg.sender === userId ? "justify-end" : "justify-start"}`}
+            className={`message p-3 flex ${msg.sender === userId ? "justify-end" : "justify-start"}`}
           >
-            <div className={`relative max-w-xs ${msg.sender === userId ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"} p-3 rounded-lg shadow-md`}>
+            <div
+              className={`relative max-w-xs ${
+                msg.sender === userId ? "bg-teal-100 text-teal-800" : "bg-blue-100 text-blue-800"
+              } p-4 rounded-lg shadow-md`}
+            >
               <p>{msg.message}</p>
-              <span className="text-xs text-gray-500 absolute bottom-1 right-2">
+              <span className="text-xs text-gray-500 absolute bottom-2 right-3">
                 {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
@@ -108,20 +168,22 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, otherPar
       </div>
 
       {/* Input box */}
-      <div className="flex mt-4 space-x-2">
+      <div className="flex mt-5 space-x-2">
         <input
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type your message..."
-          className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600 bg-white"
+          className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600 bg-teal-100 text-sm"
         />
         <button
           onClick={sendMessage}
-          className={`p-2 bg-cyan-600 text-white rounded-r-lg hover:bg-cyan-700 ${loading ? "cursor-wait" : ""}`}
+          className={`p-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 focus:ring-2 focus:ring-cyan-300 ${
+            loading ? "cursor-wait opacity-50" : ""
+          }`}
           disabled={loading}
         >
-          {loading ? "Sending..." : "Send"}
+          <AiOutlineSend className="text-xl" />
         </button>
       </div>
     </div>

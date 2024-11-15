@@ -16,7 +16,6 @@ interface Service {
 }
 
 const Pricing: React.FC = () => {
-  // Map the services data to match the Service interface
   const services: Service[] = servicesData.services.map((service) => ({
     title: service.title,
     description: service.description,
@@ -34,53 +33,38 @@ const Pricing: React.FC = () => {
     <>
       <Head>
         <title>Service Pricing | Your Business Name</title>
-        <meta
-          name="description"
-          content="Explore our competitive pricing for various services tailored to meet your needs."
-        />
-        <meta
-          name="keywords"
-          content="pricing, services, affordable, your business name, cost"
-        />
+        <meta name="description" content="Explore our competitive pricing for various services tailored to meet your needs." />
+        <meta name="keywords" content="pricing, services, affordable, your business name, cost" />
         <meta name="robots" content="index, follow" />
       </Head>
-      <main
-        className="pricing px-4 sm:px-6 lg:px-10 xl:px-16 2xl:px-24"
-        aria-labelledby="pricing-title"
-      >
-        <h2
-          id="pricing-title"
-          className="text-center text-2xl sm:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-8 text-teal-800"
-        >
+
+      <main className="pricing px-4 sm:px-6 lg:px-10 xl:px-16 2xl:px-24 py-12 min-h-screen ">
+        <h2 className="text-center text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold mb-12 text-teal-800" id="pricing-title">
           Pricing
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 xl:gap-20">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 xl:gap-16">
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-white flex flex-col justify-between p-4 rounded-lg shadow-lg hover:shadow-xl hover:translate-y-[-5px] transition-transform duration-300"
+              className="bg-gradient-to-b from-teal-50 to-teal-100 flex flex-col justify-between p-6 rounded-lg shadow-lg transition-transform duration-300 hover:shadow-2xl hover:scale-105"
               aria-labelledby={`service-title-${index}`}
             >
-              <h3
-                id={`service-title-${index}`}
-                className="text-lg text-center sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-semibold mb-4 text-teal-500"
-              >
+              <h3 className="text-center text-2xl lg:text-3xl font-semibold mb-2 text-teal-500" id={`service-title-${index}`}>
                 {service.title}
               </h3>
-              {service.pricing.map((priceDetail, priceIndex) => (
-                <div key={priceIndex} className="flex items-center justify-between p-2 lg:py-3">
-                  <p className="text-base sm:text-lg xl:text-xl 2xl:text-3xl font-medium">
-                    {priceDetail.category}
-                  </p>
-                  <p className="text-base sm:text-lg xl:text-xl 2xl:text-3xl text-green-500">
-                    ${priceDetail.price.toFixed(2)}
-                  </p>
-                </div>
-              ))}
+              <div className="space-y-4">
+                {service.pricing.map((priceDetail, priceIndex) => (
+                  <div key={priceIndex} className="flex justify-between text-teal-800">
+                    <p className="text-lg lg:text-xl font-medium">{priceDetail.category}</p>
+                    <p className="text-lg lg:text-xl font-semibold text-green-600">${priceDetail.price.toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
               <button
                 onClick={() => handleOrderNow(service)}
-                className="mx-auto bg-teal-500 text-white py-2 px-4 lg:py-3 lg:px-6 xl:py-4 xl:px-8 2xl:py-5 2xl:px-10 rounded-lg hover:bg-teal-600 transition-transform transform hover:translate-y-[-2px] text-sm sm:text-base lg:text-lg xl:text-xl 2xl:text-2xl"
-                aria-label={`View details for ${service.title}`}
+                className="mt-6 mx-auto bg-teal-500 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-teal-600 transition-all hover:scale-105"
+                aria-label={`Order ${service.title}`}
               >
                 Click to Order
               </button>

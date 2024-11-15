@@ -57,95 +57,80 @@ const Contact: React.FC = () => {
                 <meta name="twitter:image" content="/images/contact-page.png" />
             </Head>
 
-            <main className="text-center px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8 sm:py-10 lg:py-12 xl:py-16">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-8 text-teal-800">Contact Us</h1>
-                <div className="flex flex-col lg:flex-row justify-evenly gap-8 lg:gap-12 xl:gap-16">
+            <main className="flex flex-col items-center px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-teal-800 mb-10">Contact Us</h1>
+                <div className="flex flex-col lg:flex-row w-full max-w-5xl gap-12 justify-evenly items-center">
                     
                     {/* Contact Info */}
-                    <article className="flex flex-col justify-evenly w-full text-lg sm:text-xl gap-6 lg:w-1/3">
-                        <a href="tel:+254795644422" className="bg-white p-4 sm:p-6 lg:p-8 xl:p-10 rounded-lg shadow-lg flex justify-start items-center space-x-3 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
-                            <FaWhatsapp className="text-teal-500 text-2xl xl:text-4xl" aria-label="WhatsApp" />
-                            <div className="flex flex-col items-start gap-1">
-                                <h3 className="text-teal-500">WhatsApp</h3>
-                                <p className="text-teal-800">+254795644422</p>
-                            </div>
-                        </a>
-                        <a href="mailto:nginamiriam2@gmail.com" className="bg-white p-4 sm:p-6 lg:p-8 xl:p-10 rounded-lg shadow-lg flex justify-start items-center space-x-3 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
-                            <MdOutlineEmail className="text-teal-500 text-2xl xl:text-4xl" aria-label="Email" />
-                            <div className="flex flex-col items-start gap-1">
-                                <h3 className="text-teal-500">Email</h3>
-                                <p className="text-teal-800">nginamiriam2@gmail.com</p>
-                            </div>
-                        </a>
-                        <a href="https://www.instagram.com/cv91829?igsh=YzhmbXVjZzBienRz" className="bg-white p-4 sm:p-6 lg:p-8 xl:p-10 rounded-lg shadow-lg flex justify-start items-center space-x-3 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
-                            <FaInstagram className="text-teal-500 text-2xl xl:text-4xl" aria-label="Instagram" />
-                            <div className="flex flex-col items-start gap-1">
-                                <h3 className="text-teal-500">Instagram</h3>
-                                <p className="text-teal-800">ResumeWriter</p>
-                            </div>
-                        </a>
-                        <a href="https://www.facebook.com/profile.php?id=100094574041320" className="bg-white p-4 sm:p-6 lg:p-8 xl:p-10 rounded-lg shadow-lg flex items-center justify-start space-x-3 transition-transform hover:translate-y-[-10px]" target="_blank" rel="noopener noreferrer">
-                            <FaFacebookF className="text-teal-500 text-2xl xl:text-4xl" aria-label="Facebook" />
-                            <div className="flex flex-col items-start gap-1">
-                                <h3 className="text-teal-500">Facebook</h3>
-                                <p className="text-teal-800">@ResumeWriter</p>
-                            </div>
-                        </a>
+                    <article className="flex flex-col w-full lg:w-2/5 space-y-6 p-6 bg-gradient-to-b from-teal-100 to-teal-50 rounded-lg shadow-lg">
+                    <h2 className="text-center text-2xl font-semibold text-teal-800">Our Socials</h2>
+                        {[
+                            { href: "tel:+254795644422", label: "WhatsApp", value: "+254795644422", icon: <FaWhatsapp /> },
+                            { href: "mailto:nginamiriam2@gmail.com", label: "Email", value: "nginamiriam2@gmail.com", icon: <MdOutlineEmail /> },
+                            { href: "https://www.instagram.com/cv91829?igsh=YzhmbXVjZzBienRz", label: "Instagram", value: "ResumeWriter", icon: <FaInstagram /> },
+                            { href: "https://www.facebook.com/profile.php?id=100094574041320", label: "Facebook", value: "@ResumeWriter", icon: <FaFacebookF /> }
+                        ].map((item, idx) => (
+                            <a key={idx} href={item.href} target="_blank" rel="noopener noreferrer" 
+                               className="bg-white p-6 rounded-lg shadow-md flex items-center gap-4 hover:bg-teal-50 transition-transform transform hover:scale-105">
+                                <div className="text-teal-500 text-3xl">{item.icon}</div>
+                                <div>
+                                    <h3 className="text-teal-600 text-lg font-semibold">{item.label}</h3>
+                                    <p className="text-teal-800">{item.value}</p>
+                                </div>
+                            </a>
+                        ))}
                     </article>
                     
                     {/* Contact Form */}
-                    <article className="w-full lg:w-2/3">
-                        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-6 text-teal-800">Get in Touch with Support</h2>
+                    <article className="w-full lg:w-3/5 bg-gradient-to-b from-teal-100 to-teal-50 rounded-lg shadow-lg">
                         
                         {submitted ? (
-                            <div className="thank-you-message text-teal-800 text-lg sm:text-xl">
+                            <div className="text-teal-800 text-lg sm:text-xl text-center">
                                 <p>Thank you for reaching out! We will get back to you shortly.</p>
                                 <button
-                                    className="go-back-button mt-4 py-2 px-4 sm:py-3 sm:px-6 lg:py-4 lg:px-8 bg-teal-800 text-white rounded-lg"
                                     onClick={handleGoBack}
+                                    className="mt-6 px-5 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
                                 >
                                     Go Back
                                 </button>
                             </div>
                         ) : (
-                            <form className="bg-white p-4 sm:p-6 lg:p-8 xl:p-10 rounded-lg shadow-lg" onSubmit={handleSubmit}>
-                                <div className="form-group mb-4">
+                            <form onSubmit={handleSubmit} className=" p-6 rounded-lg shadow-lg">
+                                <h3 className=" text-center text-2xl font-semibold text-teal-800 mb-6">Get in Touch with Support</h3>
+                                <div className="mb-5">
                                     <input
-                                        placeholder="Your Name"
                                         type="text"
                                         name="name"
+                                        placeholder="Your Name"
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
-                                        className="w-full p-3 sm:p-4 border border-teal-300 rounded-lg"
+                                        className="w-full p-4 border border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                                     />
                                 </div>
-                                <div className="form-group mb-4">
+                                <div className="mb-5">
                                     <input
                                         type="email"
-                                        placeholder="Your Email"
                                         name="email"
+                                        placeholder="Your Email"
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
-                                        className="w-full p-3 sm:p-4 border border-teal-300 rounded-lg"
+                                        className="w-full p-4 border border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                                     />
                                 </div>
-                                <div className="form-group mb-4">
+                                <div className="mb-5">
                                     <textarea
-                                        placeholder="Your Message"
                                         name="message"
+                                        placeholder="Your Message"
                                         value={formData.message}
                                         onChange={handleChange}
                                         required
-                                        className="w-full p-3 sm:p-4 border border-teal-300 rounded-lg resize-none"
+                                        className="w-full p-4 border border-teal-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
                                         rows={5}
                                     />
                                 </div>
-                                <button
-                                    type="submit"
-                                    className="w-full py-3 sm:py-4 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
-                                >
+                                <button type="submit" className="w-full py-4 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition">
                                     Submit
                                 </button>
                             </form>
