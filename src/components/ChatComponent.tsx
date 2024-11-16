@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { ref, push, onChildAdded, off, get, set } from "firebase/database";
+import { ref, push, onChildAdded, off, get, set, update } from "firebase/database";
 import { db as database } from "@/lib/firebase";
 import { AiOutlineSend } from "react-icons/ai";
 import { FaExclamationTriangle } from "react-icons/fa";
@@ -32,17 +32,15 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
 
   // Function to update chatData (adminName and clientName)
   const setChatData = useCallback(async () => {
-    if (admin === "true") {
-      setAdminName(userId);
-    } else if (admin === "false") {
-      setClientName(userId);
-    }
     const chatDataRef = ref(database, `/chats/${orderId}/chatData`);
-    await set(chatDataRef, {
-      admin: adminName,
-      client: clientName,
-    });
-  }, [admin, userId, adminName, clientName, orderId]);
+    const snapshot = await get(chatDataRef);
+    if (!snapshot.exists()) {
+      await set(chatDataRef, {
+        admin: admin === "true" ? userId : "Admin",
+        client: admin === "false" ? userId : "Client",
+      });
+    }
+  }, [orderId, userId, admin]);
 
   // Fetching and setting the adminName and clientName when chat starts or updates
   useEffect(() => {
@@ -54,8 +52,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
         const snapshot = await get(chatRef);
         if (snapshot.exists()) {
           const chatData = snapshot.val();
-          setAdminName(chatData.admin);
-          setClientName(chatData.client);
+          setAdminName(chatData.admin || "Admin");
+          setClientName(chatData.client || "Client");
         } else {
           await setChatData();
         }
@@ -68,12 +66,13 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
   }, [orderId, setChatData]);
 
   useEffect(() => {
+    // Set display name based on user role
     if (admin === "true") {
       setDisplayName(clientName);
-    } else if (admin === "false") {
+    } else {
       setDisplayName(adminName);
     }
-  }, [admin, clientName, adminName, setDisplayName, setChatData]);
+  }, [admin, clientName, adminName]);
 
   useEffect(() => {
     const messagesRef = ref(database, `/chats/${orderId}/messageData`);
@@ -112,6 +111,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
           message: newMessage,
           timestamp: new Date().toISOString(),
         });
+
+        if (messages.length === 0) {
+          await setChatData(); // Update chatData with the first message sent
+        }
 
         setNewMessage(""); 
       } catch (error) {
