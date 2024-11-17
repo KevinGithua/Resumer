@@ -9,16 +9,16 @@ type ChatMessage = {
   sender: string;
   message: string;
   timestamp: string;
-  id: string;
+  id?: string;
 };
 
 type ChatComponentProps = {
   userId: string; // Current user ID
   orderId: string;
-  isAdmin?: boolean; // admin flag ("true" or "false")
+  admin: string; // admin flag ("true" or "false")
 };
 
-const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin }) => {
+const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>(""); 
   const [adminName, setAdminName] = useState<string>("Admin");
@@ -38,7 +38,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
       // Function to update chat data dynamically based on user role
       const updateChatData = async () => {
         try {
-          if (isAdmin) {
+          if (admin === "true") {
             await update(chatRef, { admin: userId });
           } else {
             await update(chatRef, { client: userId });
@@ -62,17 +62,17 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
     };
   
     fetchNames();
-  }, [orderId, isAdmin, userId]);
+  }, [orderId, admin, userId]);
   
 
   // Set display name based on user role
   useEffect(() => {
-    if (isAdmin) {
+    if (admin === "true") {
       setDisplayName(clientName);
     } else {
       setDisplayName(adminName);
     }
-  }, [isAdmin, clientName, adminName]);
+  }, [admin, clientName, adminName]);
 
   useEffect(() => {
     const messagesRef = ref(database, `/chats/${orderId}/messageData`);
