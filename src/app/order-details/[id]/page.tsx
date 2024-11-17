@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
 import ChatComponent from "@/components/ChatComponent";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { ref, get, onValue } from "firebase/database";
 import { db as database } from "@/lib/firebase";
 import { useParams, useSearchParams } from "next/navigation";
@@ -22,6 +22,7 @@ import ResumeWriting from "@/components/display/ResumeWriting";
 import ResumeRevamping from "@/components/display/ResumeRevamping";
 import { FiDownload } from "react-icons/fi";
 import { FaUser, FaRegIdBadge, FaEnvelope, FaPhoneAlt, FaBox } from "react-icons/fa";
+import { onAuthStateChanged } from "firebase/auth";
 
 
 const OrderDetails: React.FC = () => {
@@ -33,6 +34,7 @@ const OrderDetails: React.FC = () => {
   const [order, setOrder] = useState<Order | null>(null);
   const [userDetails, setUserDetails] = useState<User | null>(null);
   const [currentUser, setCurrentUser] = useState<string>("");
+  const [isAdmin, setIsAdmin] = useState<boolean>()
   const [file, setFile] = useState<File | null>(null);
   const [link, setLink] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -51,6 +53,20 @@ const OrderDetails: React.FC = () => {
 
     fetchOrderData();
   }, [id]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        const userRef = ref(db, `admins/${currentUser.uid}`);
+        const snapshot = await get(userRef);
+        setIsAdmin(snapshot.exists());
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
@@ -251,7 +267,7 @@ const OrderDetails: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between sm:space-x-4">
 
                   {/* File Upload */}
-                  {requiresFileUpload && (
+                  {requiresFileUpload && isAdmin &&(
                     <>
                       <input
                         type="file"
@@ -270,7 +286,7 @@ const OrderDetails: React.FC = () => {
                   )}
 
                   {/* Link Submission */}
-                  {requiresLink && (
+                  {requiresLink && isAdmin && (
                     <>
                       <input
                         type="text"
@@ -292,12 +308,14 @@ const OrderDetails: React.FC = () => {
                 </div>
 
                 {/* Mark as Completed */}
-                <button
-                  onClick={markAsCompleted}
-                  className="bg-teal-50 rounded-md shadow-md hover:shadow-lg transition duration-200 p-6 text-green-600 py-2 px-4 mt-6"
-                >
-                  Mark as Completed
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={markAsCompleted}
+                    className="bg-teal-50 rounded-md shadow-md hover:shadow-lg transition duration-200 p-6 text-green-600 py-2 px-4 mt-6"
+                  >
+                    Mark as Completed
+                  </button>
+                )}
               </div>
             )}
           </div>
