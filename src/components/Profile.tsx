@@ -99,11 +99,7 @@ const ProfilePage = () => {
 
 
   const handleOrderClick = (orderId: string) => {
-    const userQueryParams = new URLSearchParams({
-      admin: "false", 
-    });
-  
-    router.push(`/order-details/${orderId}?${userQueryParams.toString()}`);
+    router.push(`/order-details/${orderId}`);
   };
   
 

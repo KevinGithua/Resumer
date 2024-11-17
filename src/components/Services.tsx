@@ -17,7 +17,7 @@ const Services = () => {
   };
 
   return (
-    <main className="services min-h-screen px-4 sm:px-6 lg:px-10 xl:px-16 2xl:px-24 py-12 ">
+    <main className="services px-4 sm:px-6 lg:px-10 xl:px-16 2xl:px-24 py-12 ">
       <h1
         id="services-heading"
         className="text-center text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-teal-800 font-bold mb-10 sm:mb-12 lg:mb-16"

@@ -102,11 +102,7 @@ const AdminViewComponent = () => {
   };
 
   const handleOrderClick = (orderId: string) => {
-    const userQueryParams = new URLSearchParams({
-      admin: "true", // Specify admin role explicitly
-    });
-  
-    router.push(`/order-details/${orderId}?${userQueryParams.toString()}`);
+    router.push(`/order-details/${orderId}`);
   };
   
 

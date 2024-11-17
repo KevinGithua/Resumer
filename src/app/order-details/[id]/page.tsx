@@ -27,9 +27,7 @@ import { onAuthStateChanged } from "firebase/auth";
 
 const OrderDetails: React.FC = () => {
   const params = useParams(); // Access dynamic route parameters
-  const searchParams = useSearchParams(); // Access query parameters
   const id = params?.id as string;
-  const admin = searchParams.get("admin") as string;
   
   const [order, setOrder] = useState<Order | null>(null);
   const [userDetails, setUserDetails] = useState<User | null>(null);
@@ -178,158 +176,156 @@ const OrderDetails: React.FC = () => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <main className="p-2 sm:p-4 lg:p-2 text-gray-900">
+      <main className="pt-20">
         <h2 className="text-2xl sm:text-4xl font-bold mb-4">Order Details</h2>
         <div className="flex flex-col lg:flex-row lg:space-x-6">
-        <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 sm:p-6 lg:p-8 rounded-lg shadow-md flex-1">
-          <div className="space-y-8">
-
-            {/* User Information */}
-            <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                <FaUser className="text-teal-600 text-2xl" />
-                <span className="ml-2">User Information</span>
-              </h3>
-              <div className="space-y-4">
-                <p className="text-lg flex items-center">
-                  <FaRegIdBadge className="text-teal-800 mr-2" />
-                  <span className="text-teal-800 font-semibold">User UID:</span> <span className="text-gray-700">{order.userUid}</span>
-                </p>
-                <p className="text-lg flex items-center">
-                  <FaUser className="text-teal-800 mr-2" />
-                  <span className="text-teal-800 font-semibold">Name:</span> <span className="text-gray-700">{userDetails?.name || "Loading..."}</span>
-                </p>
-                <p className="text-lg flex items-center">
-                  <FaEnvelope className="text-teal-800 mr-2" />
-                  <span className="text-teal-800 font-semibold">Email:</span> <span className="text-gray-700">{userDetails?.email || "Loading..."}</span>
-                </p>
-                <p className="text-lg flex items-center">
-                  <FaPhoneAlt className="text-teal-800 mr-2" />
-                  <span className="text-teal-800 font-semibold">Phone Number:</span> <span className="text-gray-700">{userDetails?.phoneNumber || "Loading..."}</span>
-                </p>
+          {/* Left Column */}
+          <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 sm:p-6 lg:p-8 rounded-lg shadow-md flex-1">
+            <div className="space-y-8">
+              {/* User Information */}
+              <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out max-w-full">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                  <FaUser className="text-teal-600 text-xl sm:text-2xl" />
+                  <span className="ml-2 truncate">User Information</span>
+                </h3>
+                <div className="space-y-4">
+                  {[
+                    { icon: FaRegIdBadge, label: "UID", value: order.userUid },
+                    { icon: FaUser, label: "Name", value: userDetails?.name || "Loading..." },
+                    { icon: FaEnvelope, label: "Email", value: userDetails?.email || "Loading..." },
+                    { icon: FaPhoneAlt, label: "Phone Number", value: userDetails?.phoneNumber || "Loading..." },
+                  ].map((item, index) => (
+                    <p
+                      key={index}
+                      className="text-sm sm:text-lg flex items-center flex-wrap gap-x-2"
+                    >
+                      <item.icon className="text-teal-800 mr-2" />
+                      <span className="text-teal-800 font-semibold">{item.label}:</span>
+                      <span className="text-gray-700 truncate">{item.value}</span>
+                    </p>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Order Information */}
-            <div className="bg-gradient-to-tr from-teal-50 to-teal-100 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                <FaBox className="text-teal-600 text-2xl" />
-                <span className="ml-2">Order Details</span>
-              </h3>
-              <div className="space-y-4">
-                <p className="text-lg">
-                  <span className="text-teal-800 font-semibold">Service Title:</span> <span className="text-gray-700">{order.serviceTitle}</span>
-                </p>
-                <p className="text-lg">
-                  <span className="text-teal-800 font-semibold">Order ID:</span> <span className="text-gray-700">{order.orderId}</span>
-                </p>
-                <p className="text-lg">
-                  <span className="text-teal-800 font-semibold">Placed on:</span> <span className="text-gray-700">{formatTimestamp(order.timestamp)}</span>
-                </p>
-                <p className="text-lg">
-                  <span className="text-teal-800 font-semibold">Price:</span> <span className="text-gray-700">{order.price}</span>
-                </p>
-                <p className="text-lg">
-                  <span className="text-teal-800 font-semibold">Payment Method:</span> <span className="text-gray-700">{order.paymentMethod}</span>
-                </p>
-                <p className="text-lg">
-                  <span className="text-teal-800 font-semibold">Transaction ID:</span> <span className="text-gray-700">{order.transactionId}</span>
-                </p>
+              {/* Order Information */}
+              <div className="bg-gradient-to-tr from-teal-50 to-teal-100 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out max-w-full">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                  <FaBox className="text-teal-600 text-xl sm:text-2xl" />
+                  <span className="ml-2 truncate">Order Details</span>
+                </h3>
+                <div className="space-y-4">
+                  {[
+                    { label: "Service Title", value: order.serviceTitle },
+                    { label: "Order ID", value: order.orderId },
+                    { label: "Placed on", value: formatTimestamp(order.timestamp) },
+                    { label: "Price", value: order.price },
+                    { label: "Payment Method", value: order.paymentMethod },
+                    { label: "Transaction ID", value: order.transactionId },
+                  ].map((item, index) => (
+                    <p
+                      key={index}
+                      className="text-sm sm:text-lg flex flex-wrap gap-x-2"
+                    >
+                      <span className="text-teal-800 font-semibold">{item.label}:</span>
+                      <span className="text-gray-700 break-words">{item.value}</span>
+                    </p>
+                  ))}
+                </div>
               </div>
-            </div>
 
 
-            {/* Specific Order Details */}
-            {renderSpecificOrderDetails()}
+              {/* Specific Order Details */}
+              {renderSpecificOrderDetails()}
 
-            {/* Finished Work */}
-            {order.finishedWork && (
-              <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 rounded-md shadow-md hover:shadow-lg transition duration-200">
-                <h4 className="text-lg font-semibold text-gray-700">Finished Work</h4>
-                <a
-                  href={order.finishedWork}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-teal-700 font-medium mt-2 hover:text-teal-600"
-                  aria-label="Download finished work"
-                >
-                  <FiDownload className="text-teal-600" />
-                  {extractFilenameFromUrl(order.finishedWork)}
-                </a>
-              </div>
-            )}
+              {/* Finished Work */}
+              {order.finishedWork && (
+                <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 rounded-md shadow-md hover:shadow-lg transition duration-200">
+                  <h4 className="text-lg font-semibold text-gray-700">Finished Work</h4>
+                  <a
+                    href={order.finishedWork}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-teal-700 font-medium mt-2 hover:text-teal-600"
+                    aria-label="Download finished work"
+                  >
+                    <FiDownload className="text-teal-600" />
+                    {extractFilenameFromUrl(order.finishedWork)}
+                  </a>
+                </div>
+              )}
 
-            {/* Conditional Upload/Link Section */}
-            {order.paymentStatus === "pending" ? (
-              <p className="text-red-400 font-semibold mt-6">Order pending payment completion</p>
-            ) : !order.completed && (
-              <div className="mt-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between sm:space-x-4">
+              {/* Conditional Upload/Link Section */}
+              {order.paymentStatus === "pending" ? (
+                <p className="text-red-400 font-semibold mt-6">Order pending payment completion</p>
+              ) : !order.completed && (
+                <div className="mt-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between sm:space-x-4">
+                    {/* File Upload */}
+                    {requiresFileUpload && isAdmin && (
+                      <div className="mt-4 flex items-center space-x-4 sm:space-x-6">
+                        <input
+                          type="file"
+                          onChange={e => setFile(e.target.files?.[0] || null)}
+                          className="block w-full sm:w-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 transition duration-200 cursor-pointer"
+                        />
+                        {loading ? (
+                          <p className="text-gray-500 text-sm">Uploading...</p>
+                        ) : (
+                          <button
+                            onClick={handleFileUpload}
+                            className="bg-cyan-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-cyan-700 hover:shadow-lg transition duration-150"
+                          >
+                            Upload File
+                          </button>
+                        )}
+                      </div>
+                    )}
 
-                  {/* File Upload */}
-                  {requiresFileUpload && isAdmin &&(
-                    <>
-                      <input
-                        type="file"
-                        onChange={e => setFile(e.target.files?.[0] || null)}
-                        className="block w-full sm:w-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-cyan-600 file:text-white hover:file:bg-cyan-700"
-                      />
-                      {loading ? <p className="text-gray-500">Uploading...</p> : (
-                        <button
-                          onClick={handleFileUpload}
-                          className="bg-cyan-600 text-white py-2 px-6 rounded-full shadow-md hover:bg-cyan-700 transition ease-in-out duration-150"
-                        >
-                          Upload File
-                        </button>
-                      )}
-                    </>
-                  )}
+                    {/* Link Submission */}
+                    {requiresLink && isAdmin && (
+                      <div className="mt-4 flex items-center space-x-4 sm:space-x-6">
+                        <input
+                          type="text"
+                          value={link}
+                          onChange={e => setLink(e.target.value)}
+                          placeholder="Enter Link"
+                          className="block w-full sm:w-auto p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-600 focus:outline-none transition duration-200"
+                        />
+                        {loading ? (
+                          <p className="text-gray-500 text-sm">Submitting...</p>
+                        ) : (
+                          <button
+                            onClick={handleLinkSubmit}
+                            className="bg-cyan-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-cyan-700 hover:shadow-lg transition duration-150"
+                          >
+                            Submit
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
-                  {/* Link Submission */}
-                  {requiresLink && isAdmin && (
-                    <>
-                      <input
-                        type="text"
-                        value={link}
-                        onChange={e => setLink(e.target.value)}
-                        placeholder="Enter Link"
-                        className="block w-full sm:w-auto p-2 border border-gray-300 rounded mt-4 sm:mt-0"
-                      />
-                      {loading ? <p className="text-gray-500">Submitting...</p> : (
-                        <button
-                          onClick={handleLinkSubmit}
-                          className="bg-cyan-600 text-white py-2 px-6 rounded-full shadow-md hover:bg-cyan-700 transition ease-in-out duration-150"
-                        >
-                          Submit Link
-                        </button>
-                      )}
-                    </>
+                  {/* Mark as Completed */}
+                  {isAdmin && (
+                    <button
+                      onClick={markAsCompleted}
+                      className="bg-teal-50 text-green-600 py-2 px-6 mt-6 rounded-lg shadow-md hover:bg-teal-100 hover:shadow-lg transition duration-200"
+                    >
+                      Mark as Completed
+                    </button>
                   )}
                 </div>
-
-                {/* Mark as Completed */}
-                {isAdmin && (
-                  <button
-                    onClick={markAsCompleted}
-                    className="bg-teal-50 rounded-md shadow-md hover:shadow-lg transition duration-200 p-6 text-green-600 py-2 px-4 mt-6"
-                  >
-                    Mark as Completed
-                  </button>
-                )}
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
 
-          <div className="mt-6 lg:mt-0 lg:w-[400px] h-[600px] overflow-y-auto bg-gradient-to-b from-teal-50 to-teal-100 shadow-sm rounded-lg ease-in-out p-4">
-            <ChatComponent
-              userId={currentUser} 
-              orderId={order?.orderId}
-              admin={admin} // Convert string to boolean
-            />
+          {/* Right Column */}
+          <div className="mt-6 lg:mt-0 lg:w-[400px] h-[600px] overflow-y-auto bg-gradient-to-b from-teal-50 to-teal-100 shadow-sm rounded-lg p-4">
+            <ChatComponent userId={currentUser} orderId={order?.orderId} isAdmin={isAdmin} />
           </div>
         </div>
       </main>
+
     </Suspense>
   );
 };
