@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState, useRef, useCallback } from "react";
-import { ref, push, onChildAdded, off, get, set, update } from "firebase/database";
+import { useEffect, useState, useRef } from "react";
+import { ref, push, onChildAdded, off, get, update } from "firebase/database";
 import { db as database } from "@/lib/firebase";
 import { AiOutlineSend } from "react-icons/ai";
 import { FaExclamationTriangle } from "react-icons/fa";
@@ -30,43 +30,43 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
   const messageListenerRef = useRef<((snapshot: any) => void) | null>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
 
-  // Function to update chatData (adminName and clientName)
-  const setChatData = useCallback(async () => {
-    const chatDataRef = ref(database, `/chats/${orderId}/chatData`);
-    const snapshot = await get(chatDataRef);
-    if (!snapshot.exists()) {
-      await set(chatDataRef, {
-        admin: admin === "true" ? userId : "Admin",
-        client: admin === "false" ? userId : "Client",
-      });
-    }
-  }, [orderId, userId, admin]);
-
-  // Fetching and setting the adminName and clientName when chat starts or updates
+  // Fetch and set adminName and clientName when chat starts
   useEffect(() => {
     const fetchNames = async () => {
+      const chatRef = ref(database, `/chats/${orderId}/chatData`);
+  
+      // Function to update chat data dynamically based on user role
+      const updateChatData = async () => {
+        try {
+          if (admin === "true") {
+            await update(chatRef, { admin: userId });
+          } else {
+            await update(chatRef, { client: userId });
+          }
+        } catch (error) {
+          setError("Failed to update chat data.");
+        }
+      };
+  
       try {
-        const chatRef = ref(database, `/chats/${orderId}/chatData`);
-
-        // Get chat data to retrieve admin and client names
         const snapshot = await get(chatRef);
         if (snapshot.exists()) {
           const chatData = snapshot.val();
           setAdminName(chatData.admin || "Admin");
           setClientName(chatData.client || "Client");
-        } else {
-          await setChatData();
         }
+        await updateChatData(); // Call the function within the same useEffect
       } catch (error) {
         setError("Failed to fetch names.");
       }
     };
-
+  
     fetchNames();
-  }, [orderId, setChatData]);
+  }, [orderId, admin, userId]);
+  
 
+  // Set display name based on user role
   useEffect(() => {
-    // Set display name based on user role
     if (admin === "true") {
       setDisplayName(clientName);
     } else {
@@ -112,10 +112,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
           timestamp: new Date().toISOString(),
         });
 
-        if (messages.length === 0) {
-          await setChatData(); // Update chatData with the first message sent
-        }
-
         setNewMessage(""); 
       } catch (error) {
         setError("Failed to send message. Please try again."); 
@@ -159,7 +155,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
             >
               <p>{msg.message}</p>
               <span className="text-xs text-gray-500 absolute bottom-2 right-3">
-                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </span>
             </div>
           </div>
@@ -183,7 +179,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, admin })
           }`}
           disabled={loading}
         >
-           <AiOutlineSend className="text-xl" />
+          <AiOutlineSend className="text-xl" />
         </button>
       </div>
     </div>
