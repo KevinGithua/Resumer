@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { ref, push, onChildAdded, off, get, update } from "firebase/database";
+import { ref, push, onChildAdded, off, onValue, get, update } from "firebase/database";
 import { db as database } from "@/lib/firebase";
 import { AiOutlineSend } from "react-icons/ai";
 import { FaExclamationTriangle } from "react-icons/fa";
@@ -29,7 +29,26 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
 
-  // Fetch admin and client names and update chat data dynamically
+  // Real-time listener for names
+  useEffect(() => {
+    const chatRef = ref(database, `/chats/${orderId}/chatData`);
+
+    const handleChatDataChange = (snapshot: any) => {
+      if (snapshot.exists()) {
+        const chatData = snapshot.val();
+        setAdminName(chatData.admin || "Admin");
+        setClientName(chatData.client || "Client");
+      }
+    };
+
+    onValue(chatRef, handleChatDataChange);
+
+    return () => {
+      off(chatRef, "value", handleChatDataChange);
+    };
+  }, [orderId]);
+
+  // Update the database if admin or client fields are empty
   useEffect(() => {
     const chatRef = ref(database, `/chats/${orderId}/chatData`);
 
@@ -38,14 +57,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
         const snapshot = await get(chatRef);
         if (snapshot.exists()) {
           const chatData = snapshot.val();
-          // Avoid overwriting existing names
           if (isAdmin && !chatData.admin) {
             await update(chatRef, { admin: userId });
           } else if (!isAdmin && !chatData.client) {
             await update(chatRef, { client: userId });
           }
         } else {
-          // Initialize chat data if not present
           await update(chatRef, {
             admin: isAdmin ? userId : null,
             client: !isAdmin ? userId : null,
@@ -56,33 +73,19 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
       }
     };
 
-    const fetchNames = async () => {
-      try {
-        const snapshot = await get(chatRef);
-        if (snapshot.exists()) {
-          const chatData = snapshot.val();
-          setAdminName(chatData.admin || "Admin");
-          setClientName(chatData.client || "Client");
-        }
-        await updateChatData();
-      } catch (error) {
-        setError("Failed to fetch chat names.");
-      }
-    };
-
-    fetchNames();
+    updateChatData();
   }, [orderId, isAdmin, userId]);
 
-  // Update the display name based on role
+  // Update display name dynamically
   useEffect(() => {
-    if (isAdmin && clientName) {
+    if (isAdmin) {
       setDisplayName(clientName);
-    } else if (!isAdmin && adminName) {
+    } else {
       setDisplayName(adminName);
     }
   }, [isAdmin, adminName, clientName]);
 
-  // Fetch and listen to chat messages
+  // Listen for chat messages
   useEffect(() => {
     const messagesRef = ref(database, `/chats/${orderId}/messageData`);
 
