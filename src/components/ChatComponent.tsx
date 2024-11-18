@@ -15,39 +15,48 @@ type ChatMessage = {
 type ChatComponentProps = {
   userId: string; // Current user ID
   orderId: string;
-  isAdmin?: boolean; // admin flag ("true" or "false")
+  isAdmin: boolean; // Admin flag
 };
 
 const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [newMessage, setNewMessage] = useState<string>(""); 
+  const [newMessage, setNewMessage] = useState<string>("");
   const [adminName, setAdminName] = useState<string>("Admin");
   const [clientName, setClientName] = useState<string>("Client");
-  const [displayName, setDisplayName] = useState<string>(""); // Track the display name
+  const [displayName, setDisplayName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messageListenerRef = useRef<((snapshot: any) => void) | null>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
 
-  // Fetch and set adminName and clientName when chat starts
+  // Fetch admin and client names and update chat data dynamically
   useEffect(() => {
-    const fetchNames = async () => {
-      const chatRef = ref(database, `/chats/${orderId}/chatData`);
-  
-      // Function to update chat data dynamically based on user role
-      const updateChatData = async () => {
-        try {
-          if (isAdmin) {
+    const chatRef = ref(database, `/chats/${orderId}/chatData`);
+
+    const updateChatData = async () => {
+      try {
+        const snapshot = await get(chatRef);
+        if (snapshot.exists()) {
+          const chatData = snapshot.val();
+          // Avoid overwriting existing names
+          if (isAdmin && !chatData.admin) {
             await update(chatRef, { admin: userId });
-          } else if(!isAdmin) {
+          } else if (!isAdmin && !chatData.client) {
             await update(chatRef, { client: userId });
           }
-        } catch (error) {
-          setError("Failed to update chat data.");
+        } else {
+          // Initialize chat data if not present
+          await update(chatRef, {
+            admin: isAdmin ? userId : null,
+            client: !isAdmin ? userId : null,
+          });
         }
-      };
-  
+      } catch (error) {
+        setError("Failed to update chat data.");
+      }
+    };
+
+    const fetchNames = async () => {
       try {
         const snapshot = await get(chatRef);
         if (snapshot.exists()) {
@@ -55,25 +64,25 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
           setAdminName(chatData.admin || "Admin");
           setClientName(chatData.client || "Client");
         }
-        await updateChatData(); // Call the function within the same useEffect
+        await updateChatData();
       } catch (error) {
-        setError("Failed to fetch names.");
+        setError("Failed to fetch chat names.");
       }
     };
-  
+
     fetchNames();
   }, [orderId, isAdmin, userId]);
-  
 
-  // Set display name based on user role
+  // Update the display name based on role
   useEffect(() => {
-    if (isAdmin) {
+    if (isAdmin && clientName) {
       setDisplayName(clientName);
-    } else if(!isAdmin) {
+    } else if (!isAdmin && adminName) {
       setDisplayName(adminName);
     }
-  }, [isAdmin, clientName, adminName]);
+  }, [isAdmin, adminName, clientName]);
 
+  // Fetch and listen to chat messages
   useEffect(() => {
     const messagesRef = ref(database, `/chats/${orderId}/messageData`);
 
@@ -82,11 +91,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
       setMessages((prevMessages) => [...prevMessages, { ...message, id: snapshot.key }]);
     };
 
-    if (messageListenerRef.current) {
-      off(messagesRef, "child_added", messageListenerRef.current);
-    }
-
-    messageListenerRef.current = handleNewMessage;
     onChildAdded(messagesRef, handleNewMessage);
 
     return () => {
@@ -94,6 +98,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
     };
   }, [orderId]);
 
+  // Auto-scroll to the latest message
   useEffect(() => {
     if (messagesEndRef.current && chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
@@ -112,14 +117,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
           timestamp: new Date().toISOString(),
         });
 
-        setNewMessage(""); 
+        setNewMessage("");
       } catch (error) {
-        setError("Failed to send message. Please try again."); 
+        setError("Failed to send message. Please try again.");
       } finally {
         setLoading(false);
       }
     } else {
-      setError("Message cannot be empty."); 
+      setError("Message cannot be empty.");
     }
   };
 

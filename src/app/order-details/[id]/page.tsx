@@ -32,7 +32,7 @@ const OrderDetails: React.FC = () => {
   const [order, setOrder] = useState<Order | null>(null);
   const [userDetails, setUserDetails] = useState<User | null>(null);
   const [currentUser, setCurrentUser] = useState<string>("");
-  const [isAdmin, setIsAdmin] = useState<boolean>();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
   const [link, setLink] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
