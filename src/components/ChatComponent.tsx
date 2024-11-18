@@ -64,8 +64,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
           }
         } else {
           await update(chatRef, {
-            admin: isAdmin ? userId : null,
-            client: !isAdmin ? userId : null,
+            admin: isAdmin ? userId : adminName,
+            client: !isAdmin ? userId : clientName,
           });
         }
       } catch (error) {
