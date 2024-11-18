@@ -27,14 +27,12 @@ import { onAuthStateChanged } from "firebase/auth";
 
 const OrderDetails: React.FC = () => {
   const params = useParams(); // Access dynamic route parameters
-  const searchParams = useSearchParams(); // Access query parameters
   const id = params?.id as string;
-  const admin = searchParams.get("admin") as string;
   
   const [order, setOrder] = useState<Order | null>(null);
   const [userDetails, setUserDetails] = useState<User | null>(null);
   const [currentUser, setCurrentUser] = useState<string>("");
-  const [isAdmin, setIsAdmin] = useState<boolean>()
+  const [isAdmin, setIsAdmin] = useState<boolean>();
   const [file, setFile] = useState<File | null>(null);
   const [link, setLink] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -323,7 +321,7 @@ const OrderDetails: React.FC = () => {
 
           {/* Right Column */}
           <div className="mt-6 lg:mt-0 lg:w-[400px] h-[600px] overflow-y-auto bg-gradient-to-b from-teal-50 to-teal-100 shadow-sm rounded-lg p-4">
-            <ChatComponent userId={currentUser} orderId={order?.orderId} admin={admin} />
+            <ChatComponent userId={currentUser} orderId={order?.orderId} isAdmin={isAdmin} />
           </div>
         </div>
       </main>
