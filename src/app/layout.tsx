@@ -19,7 +19,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         {clientId ? (
           <PayPalScriptProvider options={{ clientId }}>
             <NavBar />
-            <main className="p-4 sm:p-6 lg:p-10 xl:p-16">
+            <main>
               {children}
             </main>
             <Footer />

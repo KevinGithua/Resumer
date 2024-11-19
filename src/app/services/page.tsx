@@ -4,7 +4,7 @@ import Services from '@/components/Services';
 
 const ServicesPage = () => {
   return (
-    <div className="services-page bg-cyan-100 min-h-screen">
+    <div className="services-page">
       <Services />
     </div>
   );

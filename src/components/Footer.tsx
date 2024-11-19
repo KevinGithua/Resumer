@@ -9,7 +9,7 @@ interface FooterCardProps {
 
 const FooterCard: React.FC<FooterCardProps> = ({ title, titleHref, links }) => {
   return (
-    <div className="bg-gradient-to-b from-teal-50 to-teal-100 p-4 rounded-md shadow-md hover:shadow-2xl transform transition-all duration-300 hover:scale-105 ease-in-out">
+    <div className="hover:bg-gradient-to-b from-teal-50 to-teal-100 rounded-md hover:shadow-2xl transform transition-all duration-300 hover:scale-105 ease-in-out">
       <Link href={titleHref} aria-label={`${title} section`}>
         <h4 className="font-semibold cursor-pointer hover:text-teal-300 text-center">{title}</h4>
       </Link>

@@ -17,40 +17,46 @@ const Services = () => {
   };
 
   return (
-    <main className="services px-4 sm:px-6 lg:px-10 xl:px-16 2xl:px-24 py-12 ">
+    <main className="services">
       <h1
         id="services-heading"
-        className="text-center text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-teal-800 font-bold mb-10 sm:mb-12 lg:mb-16"
+        className="text-center text-3xl sm:text-4xl lg:text-5xl text-teal-800 font-bold mb-10 sm:mb-12"
       >
         Our Key Services
       </h1>
       <section
         aria-labelledby="services-heading"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 xl:gap-16"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
       >
         {servicesData.services.map((service: Service) => (
           <article
             key={service.title}
-            className="bg-gradient-to-b from-teal-50 to-teal-100 rounded-lg shadow-md hover:shadow-2xl transform transition-all duration-300 hover:scale-105 p-8 sm:p-10 lg:p-12 xl:p-14 cursor-pointer focus:outline-none focus:ring-4 focus:ring-teal-500"
+            className="relative bg-gradient-to-b from-teal-50 to-teal-100 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 p-8 cursor-pointer focus:outline-none focus:ring-4 focus:ring-teal-500 overflow-hidden"
             onClick={() => handleCardClick(service)}
             role="button"
             tabIndex={0}
             aria-label={`Learn more about ${service.title}`}
             onKeyPress={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') handleCardClick(service);
+              if (e.key === "Enter" || e.key === " ") handleCardClick(service);
             }}
           >
-            <h2 className="text-xl sm:text-2xl lg:text-3xl text-teal-600 text-center font-semibold mb-4">
-              {service.title}
-            </h2>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-700 text-center leading-relaxed">
-              {service.description}
-            </p>
+            {/* Gradient Border Effect */}
+            <div className="absolute inset-0 rounded-lg blur-lg opacity-30"></div>
+  
+            {/* Card Content */}
+            <div className="relative z-10">
+              <h2 className="text-lg sm:text-2xl text-teal-600 text-center font-semibold mb-4">
+                {service.title}
+              </h2>
+              <p className="sm:text-center text-gray-700 leading-relaxed">
+                {service.description}
+              </p>
+            </div>
           </article>
         ))}
       </section>
     </main>
-  );
+  );  
 };
 
 export default Services;

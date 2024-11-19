@@ -42,7 +42,7 @@ export const metadata = {
 
 const Page = () => {
   return (
-    <div className="flex flex-col gap-12 px-4 sm:px-8 lg:px-16">
+    <div className="flex flex-col gap-12">
       <section aria-labelledby="home-heading">
         <h2 id="home-heading" className="sr-only">Home</h2>
         <HomePage />

@@ -120,19 +120,19 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
       )}
       <h2 className="text-2xl text-teal-800 font-semibold">Resume Revamping</h2>
 
-            {/* Resume Upload */}
-            <div className="mb-6">
-        <label htmlFor="resumeFile" className="block text-gray-700 font-medium">Upload Existing Resume</label>
-        <input
-          type="file"
-          name="resumeFile"
-          id="resumeFile"
-          accept=".pdf,.doc,.docx"
-          onChange={handleFileUpload}
-          className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-        {fileUploadLoading && <p className="mt-2 text-teal-600">Uploading...</p>}
-        {fileUploadError && <p className="text-red-600">{fileUploadError}</p>}
+        {/* Resume Upload */}
+        <div className="mb-6">
+          <label htmlFor="resumeFile" className="block text-gray-700 font-medium">Upload Existing Resume</label>
+          <input
+            type="file"
+            name="resumeFile"
+            id="resumeFile"
+            accept=".pdf,.doc,.docx"
+            onChange={handleFileUpload}
+            className="mt-1 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+          {fileUploadLoading && <p className="mt-2 text-teal-600">Uploading...</p>}
+          {fileUploadError && <p className="text-red-600">{fileUploadError}</p>}
       </div>
       
       {/* Contact Information */}

@@ -11,7 +11,7 @@ const ResumeRevampingDetails: React.FC<ResumeRevampingDetailsProps> = ({ order }
     <div className="bg-gradient-to-br from-teal-50 to-teal-100 p-8 rounded-xl shadow-lg">
       <h3 className="text-2xl font-bold text-teal-800 mb-6 text-center">Resume Revamping Details</h3>
 
-      <div className="space-y-6">
+      <div className="space-y-6 text-sm">
         {/* Contact Information */}
         <div className="border-b pb-4">
           <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
@@ -66,7 +66,7 @@ const ResumeRevampingDetails: React.FC<ResumeRevampingDetailsProps> = ({ order }
           <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
             <FiStar className="text-teal-500" /> Skills
           </h4>
-          <p>{order.skills.length > 0 ? order.skills.join(", ") : <span className="italic text-gray-500">No skills provided</span>}</p>
+          <p >{order.skills.length > 0 ? order.skills.join(", ") : <span className="italic text-gray-500">No skills provided</span>}</p>
         </div>
 
         {/* References Information */}
@@ -93,7 +93,7 @@ const ResumeRevampingDetails: React.FC<ResumeRevampingDetailsProps> = ({ order }
             <FiDownload className="text-teal-500" /> Uploaded Resume
           </h4>
           {order.resumeFileUrl || order.finishedWork ? (
-            <p className="flex items-center space-x-2">
+            <p className="flex items-center space-x-2 text-sm sm:text-lg">
               <span className="text-teal-700">File Name:</span>
               <a
                 href={order.finishedWork || order.resumeFileUrl}
@@ -106,7 +106,7 @@ const ResumeRevampingDetails: React.FC<ResumeRevampingDetailsProps> = ({ order }
               </a>
             </p>
           ) : (
-            <p className="italic text-gray-500">No resume file uploaded</p>
+            <p className="italic text-gray-500 text-sm sm:text-lg ">No resume file uploaded</p>
           )}
         </div>
 
@@ -115,7 +115,7 @@ const ResumeRevampingDetails: React.FC<ResumeRevampingDetailsProps> = ({ order }
           <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
             <FiBookOpen className="text-teal-500" /> Additional Notes
           </h4>
-          <p>{order.additionalNotes || <span className="italic text-gray-500">No additional notes</span>}</p>
+          <p className='text-sm sm:text-lg '>{order.additionalNotes || <span className="italic text-gray-500">No additional notes</span>}</p>
         </div>
       </div>
     </div>

@@ -29,16 +29,16 @@ const HomePage = () => {
   };
 
   return (
-    <main className="flex flex-col sm:flex-row gap-20 2xl:gap-0 justify-between sm:items-start text-center min-h-[calc(100vh-64px)] ">
+    <main className="flex flex-col sm:flex-row gap-20 2xl:gap-0 justify-between sm:items-start text-center">
       <div className="landing-content sm:text-left flex flex-col gap-8 items-center sm:items-start justify-between sm:w-2/5">
         <div className='font-bold'>
-          <p className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl 2xl:text-[8rem] pt-10">
+          <p className="text-3xl sm:text-5xl">
             Welcome to 
           </p>
-          <h1 className="text-pink-500 py-10 text-5xl sm:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[10rem]">Resumer</h1>
+          <h1 className="text-pink-500 text-5xl sm:text-7xl lg:text-8xl xl:text-9xl">Resumer</h1>
         </div>
         <div className='2xl:pb-10'>
-          <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-5xl text-cyan-500">
+          <p className="  text-cyan-500">
             Professional Resume Writing and Revamping Services
           </p>
         </div>
@@ -47,24 +47,19 @@ const HomePage = () => {
           onClick={handleGetStartedClick}
           aria-label="Get started with our services"
           className="
-            cta-button bg-pink-500  text-white 
-            px-6 py-3 rounded-lg font-bold 
-            text-lg lg:text-xl xl:text-4xl 2xl:text-6xl 
-            transition-transform transform 
-            hover:-translate-y-1 hover:bg-pink-600  active:bg-pink-700
-            focus:outline-none focus:ring-4  focus:ring-pink-300
+            cta-button bg-pink-500 
+            font-bold  
           "
         >Get Started</button>
       </div>
 
       </div>
 
-      <div className="image-container flex items-center mb-4 sm:mb-0 2xl:pt-20">
-        <div className="flip-container sm:pt-10 ">
+      <div className="image-container flex items-center mb-4 sm:mb-0">
+        <div className="flip-container sm:mt-2 ">
           <Image
             src={mainSample}
             alt="A sample resume showcasing our professional writing services"
-            className=" 2xl:max-h-max"
             priority
           />
         </div>

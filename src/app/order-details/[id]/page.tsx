@@ -2,9 +2,9 @@
 import { Suspense, useEffect, useState } from "react";
 import ChatComponent from "@/components/ChatComponent";
 import { auth, db } from "@/lib/firebase";
-import { ref, get, onValue } from "firebase/database";
+import { ref, get} from "firebase/database";
 import { db as database } from "@/lib/firebase";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams} from "next/navigation";
 import {
   fetchOrderDetails,
   fetchUserDetails,
@@ -108,7 +108,7 @@ const OrderDetails: React.FC = () => {
   };
 
   const markAsCompleted = async () => {
-    if (order) {
+    if (order ) {
       await updateOrder(order, { completed: true, status: "Completed" }, database);
       setOrder((prevOrder) =>
         prevOrder ? { ...prevOrder, completed: true, status: "Completed" } : prevOrder
@@ -121,15 +121,15 @@ const OrderDetails: React.FC = () => {
   }
 
   // Specific services
-  const requiresFileUpload = ["resumewriting", "resumerevamping", "coverletterwriting"].includes(order.serviceTitle);
-  const requiresLink = ["linkedinprofileoptimization", "jobapplicationassistance"].includes(order.serviceTitle);
+  const requiresFileUpload = ["resume_writing", "resume_revamping", "cover_letter_writing"].includes(order.serviceTitle);
+  const requiresLink = ["linkedin_profile_optimization", "job_application_assistance"].includes(order.serviceTitle);
 
   // Render specific order details based on the service title
   const renderSpecificOrderDetails = () => {
     switch (order.serviceTitle) {
-      case "resumewriting":
+      case "resume_writing":
         return <ResumeWriting order={order} />;
-      case "resumerevamping":
+      case "resume_revamping":
         return <ResumeRevamping order={order} />;
       default:
         return (
@@ -137,34 +137,34 @@ const OrderDetails: React.FC = () => {
             <h3 className="text-xl font-semibold text-teal-800 mb-4 flex items-center justify-center">
               Specific Order Details
             </h3>
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col gap-2">
               {Object.entries(order)
                 .filter(([key]) => ![
                   "userUid", "serviceTitle", "orderId", "status", "price", "transactionId", "timestamp", "completed", "paymentStatus", "paymentMethod"
                 ].includes(key))
                 .map(([key, value]) => (
-                  <div key={key} className="mb-4">
-                    <strong className="text-teal-700 text-md font-semibold block mb-1">
+                  <div key={key} className="sm:flex gap-2">
+                    <strong className="text-teal-700 text-sm font-semibold block">
                       {key.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, str => str.toUpperCase())}:
                     </strong>
-                    {key.includes("resumeUpload") && value ? (
+                    {key.includes("resumeUpload") || key.includes("existingCoverLetter") || key.includes("existingResume") || key.includes("resumeFile")  && value ? (
                       <div className="space-y-2">
                         {/* File Link */}
-                        <p className="flex items-center space-x-2">
-                          <span className="text-teal-700">File Name:</span>
+                        <p className="sm:flex justify-center text-sm items-center gap-2">
+                          <span>File Name:</span>
                           <a
                             href={value}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center space-x-2 text-sm font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-100 px-2 py-1 rounded-md transition-all duration-200 ease-in-out"
+                            className="flex items-center justify-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-md transition-all duration-200 ease-in-out"
                           >
-                            <i className="fas fa-file-alt text-lg"></i>
+                            <FiDownload className="text-lg" />
                             <span className="ml-2">{extractFilenameFromUrl(value)}</span>
                           </a>
                         </p>
                       </div>
                     ) : (
-                      <p className="text-gray-700">{value || "Not specified"}</p>
+                      <p className="text-gray-700 text-sm ">{value || "Not specified"}</p>
                     )}
                   </div>
                 ))}
@@ -177,7 +177,7 @@ const OrderDetails: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <main className="pt-20">
-        <h2 className="text-2xl sm:text-4xl font-bold mb-4">Order Details</h2>
+        <h2 className="text-lg sm:text-2xl font-bold mb-4">{order.serviceTitle.replace(/_/g, ' ').replace(/\b\w/g, (str) => str.toUpperCase()) }</h2>
         <div className="flex flex-col lg:flex-row lg:space-x-6">
           {/* Left Column */}
           <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 sm:p-6 lg:p-8 rounded-lg shadow-md flex-1">
@@ -188,7 +188,7 @@ const OrderDetails: React.FC = () => {
                   <FaUser className="text-teal-600 text-xl sm:text-2xl" />
                   <span className="ml-2 truncate">User Information</span>
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {[
                     { icon: FaRegIdBadge, label: "UID", value: order.userUid },
                     { icon: FaUser, label: "Name", value: userDetails?.name || "Loading..." },
@@ -197,7 +197,7 @@ const OrderDetails: React.FC = () => {
                   ].map((item, index) => (
                     <p
                       key={index}
-                      className="text-sm sm:text-lg flex items-center flex-wrap gap-x-2"
+                      className="text-sm flex items-center flex-wrap gap-x-2"
                     >
                       <item.icon className="text-teal-800 mr-2" />
                       <span className="text-teal-800 font-semibold">{item.label}:</span>
@@ -213,9 +213,8 @@ const OrderDetails: React.FC = () => {
                   <FaBox className="text-teal-600 text-xl sm:text-2xl" />
                   <span className="ml-2 truncate">Order Details</span>
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {[
-                    { label: "Service Title", value: order.serviceTitle },
                     { label: "Order ID", value: order.orderId },
                     { label: "Placed on", value: formatTimestamp(order.timestamp) },
                     { label: "Price", value: order.price },
@@ -224,7 +223,7 @@ const OrderDetails: React.FC = () => {
                   ].map((item, index) => (
                     <p
                       key={index}
-                      className="text-sm sm:text-lg flex flex-wrap gap-x-2"
+                      className="text-sm flex flex-wrap gap-x-2"
                     >
                       <span className="text-teal-800 font-semibold">{item.label}:</span>
                       <span className="text-gray-700 break-words">{item.value}</span>
@@ -320,7 +319,7 @@ const OrderDetails: React.FC = () => {
           </div>
 
           {/* Right Column */}
-          <div className="mt-6 lg:mt-0 lg:w-[400px] h-[600px] overflow-y-auto bg-gradient-to-b from-teal-50 to-teal-100 shadow-sm rounded-lg p-4">
+          <div className="mt-6 lg:mt-0 lg:w-[400px] h-[600px] overflow-y-auto bg-gradient-to-b from-teal-50 to-teal-100 shadow-sm rounded-lg">
             <ChatComponent userId={currentUser} orderId={order?.orderId} isAdmin={isAdmin} />
           </div>
         </div>

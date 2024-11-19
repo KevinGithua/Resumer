@@ -11,7 +11,7 @@ const ResumeWritingDetails: React.FC<ResumeWritingDetailsProps> = ({ order }) =>
     <div className="bg-gradient-to-br from-teal-50 to-teal-100 p-8 rounded-xl shadow-lg">
       <h3 className="text-2xl font-bold text-teal-800 mb-6 text-center">Resume Writing Details</h3>
 
-      <div className="space-y-6">
+      <div className="space-y-6 text-sm">
         {/* Contact Information */}
         <div className="border-b pb-4">
           <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">

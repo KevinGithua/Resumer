@@ -18,11 +18,11 @@ type OrderFormProps = {
 };
 
 const formComponents: { [key: string]: React.FC<any> } = {
-  resumewriting: ResumeWritingForm,
-  resumerevamping: ResumeRevampingForm,
-  coverletterwriting: CoverLetterWritingForm,
-  linkedinprofileoptimization: LinkedInProfileOptimizationForm,
-  jobapplicationassistance: JobApplicationAssistanceForm,
+  resume_writing: ResumeWritingForm,
+  resume_revamping: ResumeRevampingForm,
+  cover_letter_writing: CoverLetterWritingForm,
+  linkedin_profile_optimization: LinkedInProfileOptimizationForm,
+  job_application_assistance: JobApplicationAssistanceForm,
 };
 
 const OrderForm: React.FC<OrderFormProps> = ({ params }) => {
@@ -99,7 +99,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ params }) => {
   }
 
   return (
-    <div className="px-6 py-10 min-h-screen bg-cyan-100">
+    <main >
       <SelectedForm
         onChange={handleChange}
         formData={formData}
@@ -109,7 +109,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ params }) => {
         loading={loading}
         error={error}
       />
-    </div>
+    </main>
   );
 };
 

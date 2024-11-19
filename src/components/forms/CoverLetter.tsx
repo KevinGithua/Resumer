@@ -50,26 +50,9 @@ const CoverLetterWritingForm: React.FC<CoverLetterWritingFormProps> = ({
         </div>
       )}
 
-      {/* Existing Cover Letter */}
-      <div className="mb-6">
-        <label htmlFor="existingCoverLetter" className="block text-gray-700 font-medium mb-2">Upload Existing Cover Letter</label>
-        <input
-          type="file"
-          id="existingCoverLetter"
-          name="existingCoverLetter"
-          onChange={onChange}
-          className="mt-1 w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-        />
-        {formData.existingCoverLetter && (
-          <a href={formData.existingCoverLetter} target="_blank" rel="noopener noreferrer" className="text-teal-600 text-sm mt-2 inline-block">
-            View uploaded cover letter
-          </a>
-        )}
-      </div>
-
       {/* Job Applying For */}
       <div className="mb-6">
-        <label htmlFor="jobApplyingFor" className="block text-gray-700 font-medium mb-2">Job Applying For</label>
+        <label htmlFor="jobApplyingFor" className="block text-gray-700 font-medium mb-2">Job or Field of Interest</label>
         <input
           type="text"
           id="jobApplyingFor"
@@ -83,7 +66,7 @@ const CoverLetterWritingForm: React.FC<CoverLetterWritingFormProps> = ({
 
       {/* Company Applying To */}
       <div className="mb-6">
-        <label htmlFor="companyApplyingTo" className="block text-gray-700 font-medium mb-2">Company Applying To</label>
+        <label htmlFor="companyApplyingTo" className="block text-gray-700 font-medium mb-2">Company or Type of industry</label>
         <input
           type="text"
           id="companyApplyingTo"
@@ -97,17 +80,17 @@ const CoverLetterWritingForm: React.FC<CoverLetterWritingFormProps> = ({
 
       {/* Existing Resume */}
       <div className="mb-6">
-        <label htmlFor="existingResume" className="block text-gray-700 font-medium mb-2">Upload Existing Resume</label>
+        <label htmlFor="existingResume" className="block text-gray-700 font-medium mb-2">Upload Resume</label>
         <input
           type="file"
-          id="existingResume"
-          name="existingResume"
+          id="resumeUpload"
+          name="resumeUpload"
           onChange={onChange}
           required
           className="mt-1 w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
         />
-        {formData.existingResume && (
-          <a href={formData.existingResume} target="_blank" rel="noopener noreferrer" className="text-teal-600 text-sm mt-2 inline-block">
+        {formData.resumeUpload && (
+          <a href={formData.resumeUpload} target="_blank" rel="noopener noreferrer" className="text-teal-600 text-sm mt-2 inline-block">
             View uploaded resume
           </a>
         )}
