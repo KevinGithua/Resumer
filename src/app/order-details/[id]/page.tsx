@@ -137,29 +137,28 @@ const OrderDetails: React.FC = () => {
             <h3 className="text-xl font-semibold text-teal-800 mb-4 flex items-center justify-center">
               Specific Order Details
             </h3>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               {Object.entries(order)
                 .filter(([key]) => ![
                   "userUid", "serviceTitle", "orderId", "status", "price", "transactionId", "timestamp", "completed", "paymentStatus", "paymentMethod"
                 ].includes(key))
                 .map(([key, value]) => (
-                  <div key={key} className="sm:flex gap-2">
+                  <div key={key} className="sm:flex flex-col gap-2">
                     <strong className="text-teal-700 text-sm font-semibold block">
-                      {key.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, str => str.toUpperCase())}:
+                      {key.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, str => str.toUpperCase())}
                     </strong>
                     {key.includes("resumeUpload") || key.includes("existingCoverLetter") || key.includes("existingResume") || key.includes("resumeFile")  && value ? (
-                      <div className="space-y-2">
+                      <div>
                         {/* File Link */}
-                        <p className="sm:flex justify-center text-sm items-center gap-2">
-                          <span>File Name:</span>
+                        <p className="sm:flex text-sm items-center gap-2">
                           <a
                             href={value}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-md transition-all duration-200 ease-in-out"
                           >
-                            <FiDownload className="text-lg" />
-                            <span className="ml-2">{extractFilenameFromUrl(value)}</span>
+                            <span>{extractFilenameFromUrl(value)}</span>
+                            <FiDownload className="text-xl font-semibold" />
                           </a>
                         </p>
                       </div>

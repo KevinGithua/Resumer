@@ -72,7 +72,7 @@ const footerLinks = [
 const Footer: React.FC = () => {
   return (
     <footer className="text-cyan-800 py-6 px-4 md:px-6 mt-auto shadow-lg">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 text-sm sm:text-lg">
         {footerLinks.map((card, index) => (
           <FooterCard key={index} title={card.title} titleHref={card.titleHref} links={card.links} />
         ))}

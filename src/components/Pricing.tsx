@@ -38,40 +38,54 @@ const Pricing: React.FC = () => {
         <meta name="robots" content="index, follow" />
       </Head>
 
-      <main className="pricing px-4 sm:px-6 lg:px-10 xl:px-16 2xl:px-24 py-12 min-h-screen ">
-        <h2 className="text-center text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold mb-12 text-teal-800" id="pricing-title">
+      <main className="pricing">
+        <h2 className="text-center text-4xl sm:text-5xl lg:text-6xl text-teal-900 font-extrabold mb-14 tracking-wide">
           Pricing
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 xl:gap-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {services.map((service, index) => (
-            <div
+            <article
               key={index}
-              className="bg-gradient-to-b from-teal-50 to-teal-100 flex flex-col justify-between p-6 rounded-lg shadow-lg transition-transform duration-300 hover:shadow-2xl hover:scale-105"
+              className="relative bg-gradient-to-b from-teal-50 to-teal-100 rounded-xl shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 p-6 cursor-pointer focus:outline-none focus:ring-4 focus:ring-teal-500 overflow-hidden flex flex-col"
               aria-labelledby={`service-title-${index}`}
             >
-              <h3 className="text-center text-2xl lg:text-3xl font-semibold mb-2 text-teal-500" id={`service-title-${index}`}>
+              <h3
+                className="text-xl sm:text-2xl text-teal-700 text-center font-semibold mb-6"
+                id={`service-title-${index}`}
+              >
                 {service.title}
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-4 px-4 flex-grow">
                 {service.pricing.map((priceDetail, priceIndex) => (
-                  <div key={priceIndex} className="flex justify-between text-teal-800">
-                    <p className="text-lg lg:text-xl font-medium">{priceDetail.category}</p>
-                    <p className="text-lg lg:text-xl font-semibold text-green-600">${priceDetail.price.toFixed(2)}</p>
+                  <div
+                    key={priceIndex}
+                    className="flex justify-between items-center text-teal-800"
+                  >
+                    <p className="text-lg lg:text-xl font-medium">
+                      {priceDetail.category}
+                    </p>
+                    <p className="text-lg lg:text-xl font-bold text-green-600">
+                      ${priceDetail.price.toFixed(2)}
+                    </p>
                   </div>
                 ))}
               </div>
+              {/* Button at the bottom */}
+              <div className='flex justify-center'>
               <button
                 onClick={() => handleOrderNow(service)}
-                className="mt-6 mx-auto bg-teal-500 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-teal-600 transition-all hover:scale-105"
+                className="mt-4 w-1/2 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 shadow-md hover:scale-105 hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-cyan-400"
                 aria-label={`Order ${service.title}`}
               >
-                Click to Order
+                Order Now
               </button>
-            </div>
+              </div>
+            </article>
           ))}
         </div>
       </main>
+
     </>
   );
 };

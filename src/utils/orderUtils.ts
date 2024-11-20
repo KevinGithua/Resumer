@@ -41,7 +41,7 @@ export type Order = {
     contact: string;
   }[];
   resumeFile: File | null; // Store the resume file object
-  additionalNotes?: string;
+  additionalNotes: string;
 
   // Optional for flexibility
   [key: string]: any;

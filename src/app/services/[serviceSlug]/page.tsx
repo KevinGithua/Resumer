@@ -99,7 +99,7 @@ return (
     </h2>
     <div className="service-detail-content bg-gradient-to-b from-teal-50 to-teal-100 rounded-lg shadow-lg p-6 sm:p-8 lg:p-10 max-w-4xl mx-auto">
       {/* Description */}
-      <div className="mb-6 sm:mb-8">
+      <div className="mb-4">
         <h3 className="text-lg sm:text-xl lg:text-2xl text-gray-800 leading-relaxed">
           {selectedService.description}
         </h3>
@@ -110,23 +110,25 @@ return (
         {selectedService.pricing.map((item, index) => (
           <div
             key={index}
-            className="flex items-center justify-between mb-4 sm:mb-5 px-4 py-2 rounded-lg hover:bg-teal-50 transition duration-200"
+            className="flex items-center justify-between m-2 p-2 sm:mx-8 rounded-lg hover:bg-teal-50 transition duration-200"
           >
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                value={item.category}
-                onChange={() => handleCategoryChange(item.category, item.price)}
-                className="form-checkbox h-6 w-6 text-teal-600 border-gray-300 rounded focus:ring-2 focus:ring-teal-400 transition duration-200"
-              />
-              <span className="text-sm sm:text-base lg:text-lg text-gray-700 font-medium">
-                {item.category}
-              </span>
-            </label>
+            <div className='flex flex-col'>
+              <label className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  value={item.category}
+                  onChange={() => handleCategoryChange(item.category, item.price)}
+                  className="form-checkbox h-6 w-6 text-teal-600 border-gray-300 rounded focus:ring-1 focus:ring-teal-400  transition duration-200"
+                />
+                <span className="text-sm sm:text-base lg:text-lg text-gray-700 font-medium">
+                  {item.category}
+                </span>
+              </label>
+            </div>
             <div className="flex items-center text-teal-600 font-bold text-lg sm:text-xl lg:text-2xl">
-              <FaDollarSign className="mr-1 text-xl sm:text-2xl" />
+              <FaDollarSign className="text-xl sm:text-2xl" />
               <span
-                className="bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-cyan-500"
+                className="bg-clip-text text-pink-500"
               >
                 {item.price}
               </span>
