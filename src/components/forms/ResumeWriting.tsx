@@ -89,7 +89,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
   };
 
   return (
-    <form onSubmit={handleFormSubmit} className="relative max-w-3xl mx-auto bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg shadow-xl p-8">
+    <form onSubmit={handleFormSubmit} className="relative max-w-2xl bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg shadow-xl p-8">
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 text-white">
           <p>Submitting...</p>
@@ -98,7 +98,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
       <h2 className="text-xl text-teal-800 font-semibold mb-4">Create Your Resume</h2>
   
       {/* Contact Information */}
-      <div className="mb-6">
+      <div className="mb-2">
       <h3 className="text-lg font-semibold text-teal-800 mb-4">Contacts</h3>
         <label htmlFor="fullName" className="block text-teal-700 text-sm font-medium mb-1">Full Name</label>
         <input
@@ -113,7 +113,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
         />
       </div>
   
-      <div className="mb-6">
+      <div className="mb-2">
         <label htmlFor="email" className="block text-teal-700 text-sm font-medium mb-1">Email</label>
         <input
           type="email"
@@ -127,7 +127,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
         />
       </div>
   
-      <div className="mb-6">
+      <div className="mb-2">
         <label htmlFor="phone" className="block text-teal-700 text-sm font-medium mb-1">Phone Number</label>
         <input
           type="tel"
@@ -142,7 +142,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
       </div>
   
       {/* Education Section */}
-      <div className="mb-6">
+      <div className="mb-2">
         <h3 className="text-lg font-semibold text-teal-800 mb-4">Education</h3>
         {education.map((edu, index) => (
           <div key={index} className="space-y-3 mb-4">
@@ -205,7 +205,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
       </div>
   
       {/* Experience Section */}
-      <div className="mb-6">
+      <div className="mb-2">
         <h3 className="text-lg font-semibold text-teal-800 mb-4">Experience</h3>
         {experience.map((exp, index) => (
           <div key={index} className="space-y-3 mb-4">
@@ -288,7 +288,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
       </div>
   
       {/* References Section */}
-      <div className="mb-6">
+      <div className="mb-2">
         <h3 className="text-lg font-semibold text-teal-800 mb-4">References</h3>
         {references.map((ref, index) => (
           <div key={index} className="space-y-3 mb-4">

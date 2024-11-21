@@ -15,14 +15,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Resumer | Your Path to Career Success</title>
       </Head>
-      <body className="bg-cyan-100 font-sans">
+      <body className="bg-cyan-100 font-sans flex flex-col ">
         {clientId ? (
           <PayPalScriptProvider options={{ clientId }}>
-            <NavBar />
-            <main>
+            <NavBar /> 
+            <main className="max-w-screen-2xl">
               {children}
             </main>
-            <Footer />
+            <Footer/>
           </PayPalScriptProvider>
         ) : (
           <div className="text-center p-6">

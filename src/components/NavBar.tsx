@@ -103,7 +103,7 @@ const NavBar: React.FC = () => {
   ), [isAdmin, closeMenu]);
 
   return (
-  <nav className="fixed top-0 left-0 right-0 bg-cyan-100 text-cyan-700 py-4 px-4 sm:px-6 lg:px-10 xl:px-16 2xl:px-24 3xl:px-32 flex items-center justify-between z-50 shadow-md max-w-full overflow-hidden">
+  <nav className="fixed max-w-screen-2xl w-full top-0 bg-cyan-100 text-cyan-700 py-4 px-4 sm:px-6 flex items-center justify-between z-50 shadow-md overflow-hidden">
     {/* Logo and Brand */}
     <Link href="/" className="flex grow items-center space-x-2 flex-shrink-0">
       <Image src={logo} alt="Resumer Logo" height={50} width={50} loading="lazy" /> {/* Increase height/width for larger screens */}

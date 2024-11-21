@@ -3,6 +3,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import servicesData from '@/assets/servicesData.json';
 import Head from 'next/head';
+import { FiDollarSign } from 'react-icons/fi';
 
 interface PricingDetail {
   category: string;
@@ -32,14 +33,14 @@ const Pricing: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Service Pricing | Your Business Name</title>
+        <title>Service Pricing</title>
         <meta name="description" content="Explore our competitive pricing for various services tailored to meet your needs." />
         <meta name="keywords" content="pricing, services, affordable, your business name, cost" />
         <meta name="robots" content="index, follow" />
       </Head>
 
       <main className="pricing">
-        <h2 className="text-center text-4xl sm:text-5xl lg:text-6xl text-teal-900 font-extrabold mb-14 tracking-wide">
+        <h2 className="text-center text-4xl sm:text-5xl lg:text-6xl text-fuchsia-800 font-extrabold mb-6 tracking-wide">
           Pricing
         </h2>
 
@@ -51,7 +52,7 @@ const Pricing: React.FC = () => {
               aria-labelledby={`service-title-${index}`}
             >
               <h3
-                className="text-xl sm:text-2xl text-teal-700 text-center font-semibold mb-6"
+                className="text-xl sm:text-2xl text-fuchsia-800 text-center font-semibold mb-6"
                 id={`service-title-${index}`}
               >
                 {service.title}
@@ -62,11 +63,11 @@ const Pricing: React.FC = () => {
                     key={priceIndex}
                     className="flex justify-between items-center text-teal-800"
                   >
-                    <p className="text-lg lg:text-xl font-medium">
+                    <p className="text-sm sm:text-base xl:text-lg font-medium">
                       {priceDetail.category}
                     </p>
-                    <p className="text-lg lg:text-xl font-bold text-green-600">
-                      ${priceDetail.price.toFixed(2)}
+                    <p className="flex justify-center items-center text-sm sm:text-lg font-extrabold">
+                      <FiDollarSign/>{priceDetail.price.toFixed(2)}
                     </p>
                   </div>
                 ))}
@@ -75,7 +76,7 @@ const Pricing: React.FC = () => {
               <div className='flex justify-center'>
               <button
                 onClick={() => handleOrderNow(service)}
-                className="mt-4 w-1/2 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 shadow-md hover:scale-105 hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-cyan-400"
+                className="mt-2 p-2 sm:px-4 text-pink-500 bg-gradient-to-r from-purple-100 to-cyan-100 hover:text-purple-500 font-semibold rounded-full hover:bg-none hover:scale-105 shadow-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-cyan-400"
                 aria-label={`Order ${service.title}`}
               >
                 Order Now

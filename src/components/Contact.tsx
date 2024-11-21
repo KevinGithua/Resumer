@@ -58,13 +58,13 @@ const Contact: React.FC = () => {
             </Head>
 
             <main className="flex flex-col items-center">
-                <h1 className="text-center text-4xl sm:text-5xl lg:text-6xl text-teal-900 font-extrabold mb-14 tracking-wide">
+                <h1 className="text-center text-4xl sm:text-5xl lg:text-6xl text-fuchsia-800 font-extrabold mb-6 tracking-wide">
                     Contact Us
                 </h1>
                 <div className="flex flex-col lg:flex-row w-full max-w-5xl gap-8 lg:gap-12 justify-evenly items-start">
                     {/* Contact Info */}
                     <article className="flex flex-col w-full lg:w-2/5 space-y-6 p-6 bg-gradient-to-b from-teal-100 to-teal-50 rounded-lg shadow-lg">
-                        <h2 className="text-center text-lg font-semibold text-teal-800">
+                        <h2 className="text-center text-lg font-semibold text-fuchsia-800">
                             Our Socials
                         </h2>
                         {[
@@ -78,12 +78,12 @@ const Contact: React.FC = () => {
                                 href={item.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="bg-white p-2 rounded-lg shadow-md flex items-center gap-4 hover:bg-teal-50 transition-transform transform hover:scale-105"
+                                className="bg-white p-2 rounded-lg shadow-md flex items-center gap-3 hover:bg-teal-50 transition-transform transform hover:scale-105"
                             >
-                                <div className="text-teal-500 text-3xl">{item.icon}</div>
+                                <div className="text-pink-500 text-3xl">{item.icon}</div>
                                 <div>
-                                    <h3 className="text-teal-600 font-semibold text-lg">{item.label}</h3>
-                                    <h3 className="text-teal-800 text-sm">{item.value}</h3>
+                                    <h3 className="text-teal-600 font-semibold text-lg sm:text-xl">{item.label}</h3>
+                                    <h3 className="text-sm sm:text-lg">{item.value}</h3>
                                 </div>
                             </a>
                         ))}
@@ -103,7 +103,7 @@ const Contact: React.FC = () => {
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="p-4 sm:p-6">
-                                <h3 className="text-center text-lg font-semibold text-teal-800 mb-6">
+                                <h3 className="text-center text-lg sm:text-xl font-semibold text-fuchsia-800 mb-6">
                                     Get in Touch with Support
                                 </h3>
                                 <div className="mb-4">
@@ -114,7 +114,7 @@ const Contact: React.FC = () => {
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
-                                        className="w-full p-2 border text-sm border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                                        className="w-full p-2 border text-lg border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                                     />
                                 </div>
                                 <div className="mb-4">
@@ -125,7 +125,7 @@ const Contact: React.FC = () => {
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
-                                        className="w-full p-2 border text-sm border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                                        className="w-full p-2 border text-lg border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                                     />
                                 </div>
                                 <div className="mb-4">
@@ -135,13 +135,13 @@ const Contact: React.FC = () => {
                                         value={formData.message}
                                         onChange={handleChange}
                                         required
-                                        className="w-full p-2 border text-sm border-teal-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+                                        className="w-full p-2 border text-lg border-teal-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
                                         rows={5}
                                     />
                                 </div>
                                 <button
                                     type="submit"
-                                    className="w-full py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition"
+                                    className="w-full py-2 text-lg bg-gradient-to-r from-teal-400 to-cyan-400 hover:text-xl hover:bg-gradient-to-l hover:shadow-lg duration-300 focus:outline-none focus:ring-4 focus:ring-cyan-400 text-white font-semibold rounded-lg transition-all"
                                 >
                                     Submit
                                 </button>

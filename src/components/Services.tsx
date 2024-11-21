@@ -20,7 +20,7 @@ const Services = () => {
     <main className="services">
       <h1
         id="services-heading"
-        className="text-center text-3xl sm:text-4xl lg:text-5xl text-teal-800 font-bold mb-10 sm:mb-12"
+        className="text-center text-3xl sm:text-4xl lg:text-5xl text-purple-800 font-bold mb-4 sm:mb-8"
       >
         Our Key Services
       </h1>
@@ -45,7 +45,7 @@ const Services = () => {
   
             {/* Card Content */}
             <div className="relative z-10">
-              <h2 className="text-lg sm:text-2xl text-teal-600 text-center font-semibold mb-4">
+              <h2 className="text-lg sm:text-2xl text-purple-600 text-center font-semibold mb-4">
                 {service.title}
               </h2>
               <p className="text-lg lg:text-xl font-medium">

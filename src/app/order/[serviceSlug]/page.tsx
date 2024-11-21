@@ -99,7 +99,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ params }) => {
   }
 
   return (
-    <main >
+    <main>
       <SelectedForm
         onChange={handleChange}
         formData={formData}
