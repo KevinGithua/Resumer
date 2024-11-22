@@ -34,15 +34,17 @@ export type Order = {
     endYear: string;
     description: string;
   }[];
-  skills: string[];
+  skills: {
+    skill:string;
+  }[];
   references: {
     name: string;
     relationship: string;
-    contact: string;
+    email: string;
+    phone: string;
   }[];
-  resumeFile: File | null; // Store the resume file object
   additionalNotes: string;
-
+  resumeFile: File | null;
   // Optional for flexibility
   [key: string]: any;
 };

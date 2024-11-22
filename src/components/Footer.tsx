@@ -9,11 +9,11 @@ interface FooterCardProps {
 
 const FooterCard: React.FC<FooterCardProps> = ({ title, titleHref, links }) => {
   return (
-    <div className="rounded-md hover:shadow-2xl transform transition-all duration-300 hover:scale-105 ease-in-out">
+    <div className="rounded-md hover:shadow-xl transform transition-all duration-300 hover:scale-105 ease-in-out">
       <Link href={titleHref} aria-label={`${title} section`}>
         <h4 className="font-semibold font-mono text-2xl text-pink-500 cursor-pointer hover:text-pink-600 text-center">{title}</h4>
       </Link>
-      <ul className="space-y-2 text-center text-lg  font-semibold">
+      <ul className="space-y-2 text-center text-xl  font-semibold">
         {links.map((link, index) => (
           <li key={index}>
             <Link href={link.href} className="hover:text-teal-300" aria-label={link.text}>
@@ -71,15 +71,15 @@ const footerLinks = [
 
 const Footer: React.FC = () => {
   return (
-    <footer className=" text-cyan-800 py-6 mt-auto max-w-screen-2xl">
+    <footer className="text-cyan-800 py-6 mt-auto max-w-screen-2xl">
       <div className="container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-4 md:gap-6 lg:gap-10 text-sm sm:text-xl">
         {footerLinks.map((card, index) => (
           <FooterCard key={index} title={card.title} titleHref={card.titleHref} links={card.links} />
         ))}
       </div>
 
-      <div className="text-center text-xl font-semibold font-mono mt-4">
-        <p>&copy; {new Date().getFullYear()} Resumer. All rights reserved.</p>
+      <div className="text-center font-semibold font-mono mt-4">
+        <p className='text-xl'>&copy; {new Date().getFullYear()} Resumer. All rights reserved.</p>
       </div>
     </footer>
   );

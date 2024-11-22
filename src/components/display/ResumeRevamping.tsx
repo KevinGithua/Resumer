@@ -1,6 +1,6 @@
 import { Order, extractFilenameFromUrl } from '@/utils/orderUtils';
 import React from 'react';
-import { FiDownload, FiMail, FiPhone, FiUser, FiBriefcase, FiBookOpen, FiStar, FiUpload } from 'react-icons/fi';
+import { FiDownload, FiMail, FiPhone, FiUser, FiBriefcase, FiBookOpen, FiStar, FiUpload, FiCheck } from 'react-icons/fi';
 
 interface ResumeRevampingDetailsProps {
   order: Order;
@@ -66,7 +66,15 @@ const ResumeRevampingDetails: React.FC<ResumeRevampingDetailsProps> = ({ order }
           <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
             <FiStar className="text-teal-500" /> Skills
           </h4>
-          <p >{order.skills.length > 0 ? order.skills.join(", ") : <span className="italic text-gray-500">No skills provided</span>}</p>
+          {order.skills.length > 0 ? (
+            order.skills.map((skill, index) => (
+              <div key={index} className="mt-2">
+                <div className="flex gap-2"><FiCheck /> {skill.skill || "Not specified"}</div>
+              </div>
+            ))
+          ) : (
+              <div className="italic text-gray-500">No skills provided</div>
+            )}
         </div>
 
         {/* References Information */}
@@ -79,7 +87,8 @@ const ResumeRevampingDetails: React.FC<ResumeRevampingDetailsProps> = ({ order }
               <div key={index} >
                 <p><strong className="text-gray-600">Name:</strong> {reference.name || "Not specified"}</p>
                 <p><strong className="text-gray-600">Relationship:</strong> {reference.relationship || "Not specified"}</p>
-                <p><strong className="text-gray-600">Contact:</strong> {reference.contact || "Not specified"}</p>
+                <p><strong className="text-gray-600">Email:</strong> {reference.email || "Not specified"}</p>
+                <p><strong className="text-gray-600">Email:</strong> {reference.phone || "Not specified"}</p>
               </div>
             ))
           ) : (

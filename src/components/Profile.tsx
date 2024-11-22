@@ -107,7 +107,7 @@ const ProfilePage = () => {
   const handleViewChange = (newView: 'available' | 'completed' | 'unpaid') => { setView(newView); };
 
   return (
-    <div className="profile-page px-4 sm:px-6 lg:px-8 py-8 max-w-screen-lg mx-auto">
+    <div className="profile-page  px-4 sm:px-6 lg:px-8 py-8 max-w-screen-lg mx-auto">
       {loadingUserDetails ? (
         <div className="user-details mb-8 bg-white p-4 sm:p-6 rounded-lg shadow-lg">
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-cyan-800">Loading Profile...</h2>
@@ -115,7 +115,7 @@ const ProfilePage = () => {
         </div>
       ) : 
       ( userDetails && (
-          <div className="user-details mb-8 bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+          <div className="user-details mb-8 bg-gradient-to-r from-teal-50 to-teal-100 p-4 sm:p-6 rounded-lg shadow-lg">
             <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-cyan-800">Your Profile</h2>
             <p className="text-base sm:text-lg text-gray-600 mb-2">
               <strong className="font-semibold">User ID:</strong> {user?.uid || "No User ID"}
@@ -156,7 +156,7 @@ const ProfilePage = () => {
         orders.length === 0 ? ( <p className="text-gray-600">No orders available</p> ) : 
         (
           orders.map((order, index) => (
-            <li key={index} className="bg-white p-4 rounded-lg shadow-md border border-gray-200 hover:border-cyan-500 transition-all duration-300">
+            <li key={index} className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 rounded-lg shadow-md border border-gray-200 hover:border-cyan-500 transition-all duration-300">
               <button
                 onClick={() => handleOrderClick(order.orderId)}
                 className="block w-full text-left"

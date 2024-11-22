@@ -3,7 +3,6 @@ import Services from '@/components/Services';
 import Pricing from '@/components/Pricing';
 import Contact from '@/components/Contact';
 
-// Define metadata using the Metadata API
 export const metadata = {
   title: 'Resumer',
   description: 'Get expert help with resume writing, cover letter writing, LinkedIn profile optimization, and job application assistance.',

@@ -99,7 +99,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ params }) => {
   }
 
   return (
-    <main>
+    <main className="max-w-screen-lg mx-auto ">
       <SelectedForm
         onChange={handleChange}
         formData={formData}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Order } from "@/utils/orderUtils";
-import { FiMail, FiPhone, FiUser, FiBriefcase, FiBookOpen, FiStar } from 'react-icons/fi';
+import { FiUser, FiBriefcase, FiBookOpen, FiStar, FiCheck } from 'react-icons/fi';
 
 interface ResumeWritingDetailsProps {
   order: Order;
@@ -66,7 +66,15 @@ const ResumeWritingDetails: React.FC<ResumeWritingDetailsProps> = ({ order }) =>
           <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
             <FiStar className="text-teal-500" /> Skills
           </h4>
-          <div>{order.skills.length > 0 ? order.skills.join(", ") : <span className="italic text-gray-500">No skills provided</span>}</div>
+          {order.skills.length > 0 ? (
+            order.skills.map((skill, index) => (
+              <div key={index} className="mt-2">
+                <div className="flex gap-2"><FiCheck /> {skill.skill || "Not specified"}</div>
+              </div>
+            ))
+          ) : (
+              <div className="italic text-gray-500">No skills provided</div>
+            )}
         </div>
 
         {/* References Information */}
@@ -79,7 +87,8 @@ const ResumeWritingDetails: React.FC<ResumeWritingDetailsProps> = ({ order }) =>
               <div key={index} className="mt-2">
                 <div><strong className="text-gray-600">Name:</strong> {reference.name || "Not specified"}</div>
                 <div><strong className="text-gray-600">Relationship:</strong> {reference.relationship || "Not specified"}</div>
-                <div><strong className="text-gray-600">Contact:</strong> {reference.contact || "Not specified"}</div>
+                <div><strong className="text-gray-600">Email:</strong> {reference.email || "Not specified"}</div>
+                <div><strong className="text-gray-600">Phone Number:</strong> {reference.phone || "Not specified"}</div>
               </div>
             ))
           ) : (

@@ -23,10 +23,15 @@ type ExperienceEntry = {
   description: string;
 };
 
+type SkillsEntry = {
+  skill: string;
+}
+
 type ReferenceEntry = {
   name: string;
   relationship: string;
-  contact: string;
+  email: string;
+  phone:string;
 };
 
 const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loading, error, amount }) => {
@@ -34,13 +39,13 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
     fullName: '',
     email: '',
     phone: '',
-    skills: '',
     additionalNotes: ''
   });
 
   const [education, setEducation] = useState<EducationEntry[]>([{ institution: '', degree: '', startYear: '', endYear: '' }]);
   const [experience, setExperience] = useState<ExperienceEntry[]>([{ company: '', title: '', startYear: '', endYear: '', description: '' }]);
-  const [references, setReferences] = useState<ReferenceEntry[]>([{ name: '', relationship: '', contact: '' }]);
+  const [skills, setSkills] = useState<SkillsEntry[]>([{ skill: ''}]);
+  const [references, setReferences] = useState<ReferenceEntry[]>([{ name: '', relationship: '', email: '' , phone:''}]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -65,123 +70,152 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
   const addExperienceEntry = () => setExperience([...experience, { company: '', title: '', startYear: '', endYear: '', description: '' }]);
   const removeExperienceEntry = (index: number) => setExperience(experience.filter((_, i) => i !== index));
 
+  const handleSkillsChange = (index: number, field: keyof SkillsEntry, value: string) => {
+    const updatedSkills = [...skills];
+    updatedSkills[index][field] = value;
+    setSkills(updatedSkills);
+  };
+
+  const addSkillsEntry = () => setSkills([...skills, { skill: ''}]);
+  const removeSkillsEntry = (index: number) => setSkills(skills.filter((_, i) => i !== index));
+
   const handleReferenceChange = (index: number, field: keyof ReferenceEntry, value: string) => {
     const updatedReferences = [...references];
     updatedReferences[index][field] = value;
     setReferences(updatedReferences);
   };
 
-  const addReferenceEntry = () => setReferences([...references, { name: '', relationship: '', contact: '' }]);
+  const addReferenceEntry = () => setReferences([...references, { name: '', relationship: '', email: '', phone:'' }]);
   const removeReferenceEntry = (index: number) => setReferences(references.filter((_, i) => i !== index));
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const structuredData = {
-      contact: { fullName: formData.fullName, email: formData.email, phone: formData.phone },
-      skills: formData.skills.split(',').map((skill) => skill.trim()),
+      contact: { fullName: formData.fullName, email: formData.email, phone: formData.phone},
+      skills,
       education,
       experience,
-      references
+      references,
+      additionalNotes:formData.additionalNotes,
     };
 
     onSubmit(structuredData);
   };
 
   return (
-    <form onSubmit={handleFormSubmit} className="relative max-w-2xl bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg shadow-xl p-8">
+    <form 
+      onSubmit={handleFormSubmit} 
+      className="relative flex flex-col gap-4 bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg shadow-xl p-8"
+    >
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 text-white">
           <p>Submitting...</p>
         </div>
       )}
-      <h2 className="text-xl text-teal-800 font-semibold mb-4">Create Your Resume</h2>
+      <h2 className="text-xl text-center text-teal-800 font-semibold mb-4">Create Your Resume</h2>
+      <p className="mb-6 text-lg text-gray-600 text-center">
+        Create a compelling resume that complements your career and boosts your chances of success.
+      </p>
   
       {/* Contact Information */}
-      <div className="mb-2">
-      <h3 className="text-lg font-semibold text-teal-800 mb-4">Contacts</h3>
-        <label htmlFor="fullName" className="block text-teal-700 text-sm font-medium mb-1">Full Name</label>
-        <input
-          type="text"
-          name="fullName"
-          id="fullName"
-          placeholder="Enter your full name"
-          value={formData.fullName}
-          onChange={handleInputChange}
-          required
-          className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-      </div>
-  
-      <div className="mb-2">
-        <label htmlFor="email" className="block text-teal-700 text-sm font-medium mb-1">Email</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={handleInputChange}
-          required
-          className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-      </div>
-  
-      <div className="mb-2">
-        <label htmlFor="phone" className="block text-teal-700 text-sm font-medium mb-1">Phone Number</label>
-        <input
-          type="tel"
-          name="phone"
-          id="phone"
-          placeholder="Enter your phone number"
-          value={formData.phone}
-          onChange={handleInputChange}
-          required
-          className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
+      <div className="flex flex-col gap-2">
+        <h3 className="text-lg font-semibold text-teal-800">Contacts Information</h3>
+          <label htmlFor="fullName" className="block text-teal-700 text-sm font-medium mb-1">Full Name</label>
+          <input
+            type="text"
+            name="fullName"
+            id="fullName"
+            placeholder="Enter your full name"
+            value={formData.fullName}
+            onChange={handleInputChange}
+            required
+            className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+        
+    
+        <div className='flex flex-col sm:flex-row  gap-2'>
+          <div className='sm:w-1/2'>
+            <label htmlFor="email" className="block text-teal-700 text-sm font-medium">Email</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+      
+          <div className='sm:w-1/2'>
+            <label htmlFor="phone" className="block text-teal-700 text-sm font-medium">Phone Number</label>
+            <input
+              type="tel"
+              name="phone"
+              id="phone"
+              placeholder="Enter your phone number"
+              value={formData.phone}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+        </div>
       </div>
   
       {/* Education Section */}
-      <div className="mb-2">
-        <h3 className="text-lg font-semibold text-teal-800 mb-4">Education</h3>
+      <div className='flex flex-col gap-2'>
+        <h3 className="text-lg font-semibold text-teal-800">Education Details</h3>
         {education.map((edu, index) => (
           <div key={index} className="space-y-3 mb-4">
-            <label htmlFor={`institution-${index}`} className="block text-teal-700 text-sm">Institution</label>
-            <input
-              type="text"
-              id={`institution-${index}`}
-              value={edu.institution}
-              onChange={(e) => handleEducationChange(index, 'institution', e.target.value)}
-              placeholder="Enter your institution"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <label htmlFor={`degree-${index}`} className="block text-teal-700 text-sm">Degree</label>
+            <div>
+              <label htmlFor={`institution-${index}`} className="block text-teal-700 text-sm">Institution's Name</label>
+              <input
+                type="text"
+                id={`institution-${index}`}
+                value={edu.institution}
+                onChange={(e) => handleEducationChange(index, 'institution', e.target.value)}
+                placeholder="Enter your institution"
+                className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            
+            <label htmlFor={`degree-${index}`} className="block text-teal-700 text-sm">Degree Acquired</label>
             <input
               type="text"
               id={`degree-${index}`}
               value={edu.degree}
               onChange={(e) => handleEducationChange(index, 'degree', e.target.value)}
               placeholder="Enter your degree"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            <label htmlFor={`startYear-${index}`} className="block text-teal-700 text-sm">Start Year</label>
-            <input
-              type="text"
-              id={`startYear-${index}`}
-              value={edu.startYear}
-              onChange={(e) => handleEducationChange(index, 'startYear', e.target.value)}
-              placeholder="Enter start year"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <label htmlFor={`endYear-${index}`} className="block text-teal-700 text-sm">End Year</label>
-            <input
-              type="text"
-              id={`endYear-${index}`}
-              value={edu.endYear}
-              onChange={(e) => handleEducationChange(index, 'endYear', e.target.value)}
-              placeholder="Enter end year"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
+            
+            <div className='w-full flex gap-4 justify-between'>
+              <div className='sm:w-1/2'>
+                <label htmlFor={`startYear-${index}`} className="block text-teal-700 text-sm">Start Year</label>
+                <input
+                  type="date"
+                  id={`startYear-${index}`}
+                  value={edu.startYear}
+                  onChange={(e) => handleEducationChange(index, 'startYear', e.target.value)}
+                  placeholder="Enter start year"
+                  className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+              <div className='sm:w-1/2'>
+                <label htmlFor={`endYear-${index}`} className="block text-teal-700 text-sm">End Year</label>
+                <input
+                  type="date"
+                  id={`endYear-${index}`}
+                  value={edu.endYear}
+                  onChange={(e) => handleEducationChange(index, 'endYear', e.target.value)}
+                  placeholder="Enter end year"
+                  className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+            </div>
             <div className="flex justify-between mt-2">
               {education.length > 1 && (
                 <button
@@ -205,55 +239,61 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
       </div>
   
       {/* Experience Section */}
-      <div className="mb-2">
-        <h3 className="text-lg font-semibold text-teal-800 mb-4">Experience</h3>
+      <div className="flex flex-col gap-2">
+        <h3 className="text-lg font-semibold text-teal-800">Experience</h3>
         {experience.map((exp, index) => (
-          <div key={index} className="space-y-3 mb-4">
-            <label htmlFor={`company-${index}`} className="block text-teal-700 text-sm">Company</label>
+          <div key={index} className="flex flex-col gap-2">
+            <label htmlFor={`company-${index}`} className="block text-teal-700 text-sm">Company/Orgnaization</label>
             <input
               type="text"
               id={`company-${index}`}
               value={exp.company}
               onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
               placeholder="Enter company name"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            <label htmlFor={`title-${index}`} className="block text-teal-700 text-sm">Title</label>
+            <label htmlFor={`title-${index}`} className="block text-teal-700 text-sm">Title/Position</label>
             <input
               type="text"
               id={`title-${index}`}
               value={exp.title}
               onChange={(e) => handleExperienceChange(index, 'title', e.target.value)}
               placeholder="Enter your job title"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            <label htmlFor={`startYearExp-${index}`} className="block text-teal-700 text-sm">Start Year</label>
-            <input
-              type="text"
-              id={`startYearExp-${index}`}
-              value={exp.startYear}
-              onChange={(e) => handleExperienceChange(index, 'startYear', e.target.value)}
-              placeholder="Enter start year"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <label htmlFor={`endYearExp-${index}`} className="block text-teal-700 text-sm">End Year</label>
-            <input
-              type="text"
-              id={`endYearExp-${index}`}
-              value={exp.endYear}
-              onChange={(e) => handleExperienceChange(index, 'endYear', e.target.value)}
-              placeholder="Enter end year"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
+            <div className='flex gap-2'>
+              <div className='w-1/2 flex flex-col gap-2'>
+                <label htmlFor={`startYearExp-${index}`} className="block text-teal-700 text-sm">Start Year</label>
+                <input
+                  type="date"
+                  id={`startYearExp-${index}`}
+                  value={exp.startYear}
+                  onChange={(e) => handleExperienceChange(index, 'startYear', e.target.value)}
+                  placeholder="Enter start year"
+                  className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+              <div className='w-1/2 flex flex-col gap-2'>
+                <label htmlFor={`endYearExp-${index}`} className="block text-teal-700 text-sm">End Year</label>
+                <input
+                  type="date"
+                  id={`endYearExp-${index}`}
+                  value={exp.endYear}
+                  onChange={(e) => handleExperienceChange(index, 'endYear', e.target.value)}
+                  placeholder="Enter end year"
+                  className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+            </div>
             <label htmlFor={`description-${index}`} className="block text-teal-700 text-sm">Description</label>
             <textarea
               id={`description-${index}`}
               value={exp.description}
               onChange={(e) => handleExperienceChange(index, 'description', e.target.value)}
               placeholder="Describe your responsibilities"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
             ></textarea>
-            <div className="flex justify-between mt-2">
+            <div className="flex justify-between">
               {experience.length > 1 && (
                 <button
                   type="button"
@@ -276,22 +316,47 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
       </div>
 
       {/* Skills Section */}
-      <div>
-        <label htmlFor="skills" className="block text-lg font-semibold text-teal-800 mb-2">Skills</label>
-        <textarea
-          id="skills"
-          value={formData.skills}
-          onChange={handleInputChange}
-          placeholder="Enter skills"
-          className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 mb-3"
-        />
+      <div className="flex flex-col gap-2">
+        <h3 className="text-lg font-semibold text-teal-800">Highlight Your Skills</h3>
+        {skills.map((skill, index) => (
+          <div key={index} className='flex flex-col gap-2'>
+            <label htmlFor={`skill-${index}`} className="block text-teal-700 text-sm">Skill {index+1}</label>
+            <input
+              type='text'
+              name='skill'
+              id={`skill-${index}`}
+              value={skill.skill}
+              onChange={(e) => handleSkillsChange(index, 'skill', e.target.value)}
+              placeholder={`Enter your skill ${index+1}`}
+              className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={addSkillsEntry}
+                className="font-mono font-semibold text-sm"
+              >
+                Add Another Skill
+              </button>
+              {skills.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeSkillsEntry(index)}
+                  className="text-red-600 text-sm font-mono font-semibold"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
   
       {/* References Section */}
-      <div className="mb-2">
-        <h3 className="text-lg font-semibold text-teal-800 mb-4">References</h3>
+      <div className="flex flex-col gap-2">
+        <h3 className="text-lg font-semibold text-teal-800">References</h3>
         {references.map((ref, index) => (
-          <div key={index} className="space-y-3 mb-4">
+          <div key={index} className="flex flex-col gap-2">
             <label htmlFor={`name-${index}`} className="block text-teal-700 text-sm">Name</label>
             <input
               type="text"
@@ -299,7 +364,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
               value={ref.name}
               onChange={(e) => handleReferenceChange(index, 'name', e.target.value)}
               placeholder="Enter reference name"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
             <label htmlFor={`relationship-${index}`} className="block text-teal-700 text-sm">Relationship</label>
             <input
@@ -308,23 +373,38 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
               value={ref.relationship}
               onChange={(e) => handleReferenceChange(index, 'relationship', e.target.value)}
               placeholder="Enter relationship with reference"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            <label htmlFor={`contact-${index}`} className="block text-teal-700 text-sm">Contact</label>
-            <input
-              type="text"
-              id={`contact-${index}`}
-              value={ref.contact}
-              onChange={(e) => handleReferenceChange(index, 'contact', e.target.value)}
-              placeholder="Enter reference contact"
-              className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <div className="flex justify-between mt-2">
+            <div className='flex flex-col sm:flex-row gap-2 sm:items-center'>
+              <div className='sm:w-1/2'>
+                <label htmlFor={`email-${index}`} className="block text-teal-700 text-sm">Email</label>
+                    <input
+                      type="text"
+                      id={`email-${index}`}
+                      value={ref.email}
+                      onChange={(e) => handleReferenceChange(index, 'email', e.target.value)}
+                      placeholder="Enter referee's email"
+                      className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+              </div>
+              <div className='sm:w-1/2'>
+                <label htmlFor={`phone-${index}`} className="block text-teal-700 text-sm">Phone</label>
+                <input
+                  type="text"
+                  id={`email-${index}`}
+                  value={ref.phone}
+                  onChange={(e) => handleReferenceChange(index, 'phone', e.target.value)}
+                  placeholder="Enter referee's phone number"
+                  className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+            </div>
+            <div className="flex justify-between font-mono font-semibold">
               {references.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removeReferenceEntry(index)}
-                  className="text-red-600 text-xs"
+                  className="text-red-600  text-xs"
                 >
                   Remove
                 </button>
@@ -332,7 +412,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
               <button
                 type="button"
                 onClick={addReferenceEntry}
-                className="text-teal-600 text-xs"
+                className=" text-xs"
               >
                 Add Another Reference
               </button>
@@ -342,14 +422,15 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
       </div>
 
       {/* Additional Notes Section */}
-      <div>
-        <label htmlFor="additionalNotes" className="block text-teal-700 font-medium text-sm mb-2">Additional Notes</label>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="additionalNotes" className="block text-teal-700 font-medium text-sm">Additional Notes</label>
         <textarea
+          name='additionalNotes'
           id="additionalNotes"
           value={formData.additionalNotes}
           onChange={handleInputChange}
           placeholder="Enter any additional notes"
-          className="w-full p-2.5 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 mb-3"
+          className="w-full p-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
       </div>
 
