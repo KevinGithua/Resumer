@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaDollarSign } from 'react-icons/fa';
 
-type ResumeRevampingFormProps = {
+type ResumeWritingFormProps = {
   onSubmit: (formData: any) => void;
   loading: boolean;
   error: string | null;
@@ -34,7 +34,7 @@ type ReferenceEntry = {
   phone:string;
 };
 
-const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loading, error, amount }) => {
+const ResumeWritingForm: React.FC<ResumeWritingFormProps> = ({ onSubmit, loading, error, amount }) => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -113,7 +113,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
           <p>Submitting...</p>
         </div>
       )}
-      <h2 className="text-xl text-center text-teal-800 font-semibold mb-4">Create Your Resume</h2>
+      <h2 className="text-xl text-center text-teal-800 font-semibold mb-4">Get a well Crafted Resume</h2>
       <p className="mb-6 text-lg text-gray-600 text-center">
         Create a compelling resume that complements your career and boosts your chances of success.
       </p>
@@ -171,7 +171,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
         {education.map((edu, index) => (
           <div key={index} className="space-y-3 mb-4">
             <div>
-              <label htmlFor={`institution-${index}`} className="block text-teal-700 text-sm">Institution's Name</label>
+              <label htmlFor={`institution-${index}`} className="block text-teal-700 text-sm">Institution</label>
               <input
                 type="text"
                 id={`institution-${index}`}
@@ -456,4 +456,4 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
   );  
 };
 
-export default ResumeRevampingForm;
+export default ResumeWritingForm;

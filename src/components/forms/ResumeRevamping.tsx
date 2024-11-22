@@ -146,7 +146,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
   
       <div className="flex flex-col gap-6 text-lg">
         {/* Resume Upload */}
-        <div>
+        <div className="flex flex-col gap-2">
           <label htmlFor="resumeFile" className="block text-teal-700 font-medium mb-2 text-sm">Upload Existing Resume</label>
           <input
             type="file"
@@ -154,6 +154,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
             id="resumeFile"
             accept=".pdf,.doc,.docx"
             onChange={handleFileUpload}
+            required
             className="w-full block sm:w-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 transition duration-200 cursor-pointer"
           />
           {fileUploadLoading && <p className="mt-2 text-teal-600 text-sm">Uploading...</p>}
@@ -213,7 +214,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
           {education.map((edu, index) => (
             <div key={index} className="space-y-3 mb-4">
               <div>
-                <label htmlFor={`institution-${index}`} className="block text-teal-700 text-sm">Institution's Name</label>
+                <label htmlFor={`institution-${index}`} className="block text-teal-700 text-sm">Institution</label>
                 <input
                   type="text"
                   id={`institution-${index}`}

@@ -1,6 +1,6 @@
 import { Order, extractFilenameFromUrl } from '@/utils/orderUtils';
 import React from 'react';
-import { FiDownload, FiMail, FiPhone, FiUser, FiBriefcase, FiBookOpen, FiStar, FiUpload, FiCheck } from 'react-icons/fi';
+import { FiDownload, FiUser, FiBriefcase, FiBookOpen, FiStar, FiUpload, FiCheck } from 'react-icons/fi';
 
 interface ResumeRevampingDetailsProps {
   order: Order;

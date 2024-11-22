@@ -74,7 +74,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ userId, orderId, isAdmin 
     };
 
     updateChatData();
-  }, [orderId, isAdmin, userId]);
+  }, [orderId, isAdmin, userId, adminName, clientName]);
 
   // Update display name dynamically
   useEffect(() => {

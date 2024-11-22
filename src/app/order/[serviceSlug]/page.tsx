@@ -48,11 +48,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ params }) => {
   
       try {
         setLoading(true);
-        // Upload the file to Firebase Storage
         await uploadBytes(fileRef, file);
-        // Get the file's URL from Firebase Storage
         const fileUrl = await getDownloadURL(fileRef);
-        // Update formData with the file URL
         setFormData((prev) => ({ ...prev, [name]: fileUrl }));
       } catch (uploadError) {
         setError("Error uploading file. Please try again.");
@@ -60,7 +57,6 @@ const OrderForm: React.FC<OrderFormProps> = ({ params }) => {
         setLoading(false);
       }
     } else {
-      // Update formData with other input values
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };  
