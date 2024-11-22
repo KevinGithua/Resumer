@@ -15,8 +15,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Resumer | Your Path to Career Success</title>
       </Head>
-      <body className="bg-cyan-100 flex items-center justify-center">
-        <div className="max-w-screen-2xl font-sans flex flex-col items-center justify-center min-h-screen">
+      <body className="bg-cyan-100 flex justify-center">
+        <div className="max-w-screen-2xl w-full font-sans flex flex-col items-center justify-center min-h-screen">
           {clientId ? (
             <PayPalScriptProvider options={{ clientId }}>
               <NavBar /> 
