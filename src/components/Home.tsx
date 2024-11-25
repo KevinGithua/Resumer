@@ -29,7 +29,7 @@ const HomePage = () => {
   };
 
   return (
-    <main className="flex flex-col sm:flex-row gap-20 2xl:gap-0 justify-between sm:items-start text-center">
+    <main className="flex flex-col sm:flex-row  2xl:gap-0 justify-between sm:items-start text-center">
       <div className="landing-content sm:text-left flex flex-col gap-8 items-center sm:items-start justify-between sm:w-2/5">
         <div className=''>
           <p className="text-3xl font-bold font-mono sm:text-5xl">

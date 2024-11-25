@@ -145,7 +145,7 @@ const AdminViewComponent = () => {
                 >
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg sm:text-xl lg:text-xl font-semibold text-cyan-900">
-                      {order.serviceTitle}
+                      {order.serviceTitle.replace(/_/g, ' ').replace(/\b\w/g, (str) => str.toUpperCase()) }
                     </h3>
                     <p className="text-gray-600">{formatTimestamp(order.timestamp)}</p>
                   </div>

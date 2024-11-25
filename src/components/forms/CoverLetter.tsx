@@ -30,14 +30,14 @@ const CoverLetterWritingForm: React.FC<CoverLetterWritingFormProps> = ({
       className="relative max-w-2xl mx-auto bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg shadow-xl p-8 space-y-6"
       onSubmit={handleSubmit}
     >
-      <h2 className="text-2xl text-center text-teal-800 font-semibold mb-4">
+      <h2 className="text-2xl text-center text-fuchsia-800 font-semibold mb-4">
         Cover Letter Writing
       </h2>
       <p className="mb-6 text-lg text-gray-600 text-center">
         Create a compelling cover letter that complements your resume and boosts your chances of success.
       </p>
 
-      <div className="flex flex-col gap-6 text-lg">
+      <div className="flex flex-col gap-4 text-lg">
         {/* Selected Categories */}
         <div>
           <label className="block text-teal-700 font-medium mb-2">Selected Categories</label>

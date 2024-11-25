@@ -10,8 +10,8 @@ interface FooterCardProps {
 const FooterCard: React.FC<FooterCardProps> = ({ title, titleHref, links }) => {
   return (
     <div className="rounded-md  p-10 hover:shadow-xl transform transition-all duration-300 hover:scale-105 ease-in-out">
-      <Link href={titleHref} aria-label={`${title} section`}>
-        <h4 className="font-semibold font-mono text-2xl text-pink-500 cursor-pointer hover:text-pink-600 text-center">{title}</h4>
+      <Link href={titleHref} aria-label={`${title} section`} className=''>
+        <h4 className="font-semibold font-mono mb-4 text-2xl text-pink-500 cursor-pointer hover:text-pink-600 text-center">{title}</h4>
       </Link>
       <ul className="space-y-2 text-center text-xl">
         {links.map((link, index) => (
@@ -72,7 +72,7 @@ const footerLinks = [
 const Footer: React.FC = () => {
   return (
     <footer className="w-full mx-auto text-cyan-800 py-4 mt-auto">
-      <div className="container w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10 lg:gap-10 text-sm sm:text-xl">
+      <div className="container w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10 lg:gap-12 text-sm sm:text-xl">
         {footerLinks.map((card, index) => (
           <FooterCard key={index} title={card.title} titleHref={card.titleHref} links={card.links} />
         ))}

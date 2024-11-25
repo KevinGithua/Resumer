@@ -48,11 +48,11 @@ const Pricing: React.FC = () => {
           {services.map((service, index) => (
             <article
               key={index}
-              className="relative bg-gradient-to-b from-teal-50 to-teal-100 rounded-xl shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 p-6 cursor-pointer focus:outline-none focus:ring-4 focus:ring-teal-500 overflow-hidden flex flex-col"
+              className="relative bg-gradient-to-t from-teal-50 to-teal-100 rounded-xl shadow-lg  hover:shadow-xl transition-transform transform hover:scale-105 p-6 cursor-pointer focus:outline-none focus:ring-4 focus:ring-teal-500 overflow-hidden flex flex-col"
               aria-labelledby={`service-title-${index}`}
             >
               <h3
-                className="text-xl sm:text-2xl text-fuchsia-800 text-center font-semibold mb-6"
+                className="text-xl sm:text-2xl text-teal-700 text-center font-semibold mb-6"
                 id={`service-title-${index}`}
               >
                 {service.title}

@@ -30,7 +30,7 @@ const JobApplicationAssistanceForm: React.FC<JobApplicationAssistanceFormProps> 
       className="relative max-w-2xl mx-auto bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg shadow-xl p-8 space-y-6"
       onSubmit={handleSubmit}
     >
-      <h2 className="text-2xl text-center text-teal-800 font-semibold mb-4">
+      <h2 className="text-2xl text-center text-fuchsia-800 font-semibold mb-4">
         Job Application Assistance
       </h2>
       <p className="mb-6 text-lg text-gray-600 text-center">

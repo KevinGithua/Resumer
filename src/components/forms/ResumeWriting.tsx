@@ -113,7 +113,7 @@ const ResumeWritingForm: React.FC<ResumeWritingFormProps> = ({ onSubmit, loading
           <p>Submitting...</p>
         </div>
       )}
-      <h2 className="text-xl text-center text-teal-800 font-semibold mb-4">Get a well Crafted Resume</h2>
+      <h2 className="text-xl text-center text-fuchsia-800 font-semibold mb-4">Get a well Crafted Resume</h2>
       <p className="mb-6 text-lg text-gray-600 text-center">
         Create a compelling resume that complements your career and boosts your chances of success.
       </p>

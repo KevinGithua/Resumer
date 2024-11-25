@@ -94,7 +94,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ params }) => {
 
 return (
   <main className="service-details">
-    <h2 className="text-center text-2xl sm:text-4xl font-bold text-teal-800 mb-6 sm:mb-8">
+    <h2 className="text-center text-2xl sm:text-4xl font-bold text-fuchsia-800 mb-6 sm:mb-8">
       {selectedService.title}
     </h2>
     <div className="service-detail-content bg-gradient-to-b from-teal-50 to-teal-100 rounded-lg shadow-lg p-6 sm:p-8 lg:p-10 max-w-4xl mx-auto">

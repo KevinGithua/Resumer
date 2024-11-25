@@ -2,11 +2,13 @@
 import React from "react";
 import Link from "next/link";
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { IoClose, IoMenu } from "react-icons/io5";
 import { getAuth, signOut, onAuthStateChanged, User } from "firebase/auth";
 import { ref, get } from "firebase/database";
 import { app, db } from "@/lib/firebase";
 import Image from "next/image";
 import logo from "@/assets/writerLogo.png";
+import { FaUserCircle } from "react-icons/fa";
 
 const auth = getAuth(app);
 
@@ -20,7 +22,7 @@ interface NavLinkProps {
 const NavLink: React.FC<NavLinkProps> = ({ href, label, onClick, className }) => (
   <Link
     href={href}
-    className={`block px-2 py-0.5 sm:px-3 sm:py-1 text-sm sm:text-base lg:text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl font-medium border-transparent border-b-2 hover:border-pink-500 hover:font-bold ${className || ""}`}
+    className={`block px-2 text-sm sm:text-base lg:text-lg xl:text-xl font-medium hover:border-pink-500 hover:border-b-2 hover:font-bold ${className || ""} transform transition-all duration-300 hover:scale-105 ease-in-out`}
     onClick={onClick}
   >
     {label}
@@ -74,63 +76,72 @@ const NavBar: React.FC = () => {
   const authLinks = useMemo(() => (
     <>
       {user ? (
-        <>
-          <NavLink href="/profile" label="My Account" className="text-purple-600 hover:border-purple-700" onClick={closeMenu} />
+        <div className="flex items-center justify-between gap-6 font-mono">
+          {isAdmin && <NavLink href="/admin" label="Dashboard" onClick={closeMenu} className="text-green-600"/>}
+          <Link href="/profile" className="h-10 flex hover:font-bold items-center gap-2 p-2 text-purple-600 transform transition-all duration-300 hover:scale-105 ease-in-out" onClick={closeMenu}>
+            <FaUserCircle /> My Account
+          </Link>
           <button
             onClick={handleSignOut}
-            className="text-pink-500 py-0.5 sm:px-3 sm:py-1 text-sm sm:text-base lg:text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl font-bold border-transparent border-b-2 hover:border-pink-700 hover:font-bold"
+            className="text-rose-500 hover:font-bold  p-2 rounded-lg shadow-lg shadow-rose-200 transform transition-all duration-300 hover:scale-105 ease-in-out"
           >
             Log Out
           </button>
-        </>
+        </div>
       ) : (
-        <>
-          <NavLink href="/signup" label="Sign Up" className="text-purple-600" onClick={closeMenu} />
-          <NavLink href="/login" label="Log In" className="text-pink-500 font-bold" onClick={closeMenu} />
-        </>
+        <div className="flex items-center justify-between gap-6 font-mono">
+          <NavLink 
+            href="/signup"  
+            label="Sign Up" 
+            className="text-purple-600 hover:font-bold  p-2 rounded-lg shadow-lg shadow-purple-200 transform transition-all duration-300 hover:scale-105 ease-in-out" 
+            onClick={closeMenu} 
+          />
+          <NavLink 
+            href="/login" 
+            label="Log In" 
+            className="text-pink-500 hover:font-bold  p-2 rounded-lg shadow-lg shadow-pink-200 transform transition-all duration-300 hover:scale-105 ease-in-out" 
+            onClick={closeMenu} 
+          />
+        </div>
       )}
     </>
-  ), [user, closeMenu, handleSignOut]);
+  ), [user, closeMenu, handleSignOut, isAdmin]);
 
   const renderLinks = useCallback(() => (
     <>
-      <NavLink href="/services/resumewriting" label="Resume Writing" onClick={closeMenu} />
-      <NavLink href="/services/coverletterwriting" label="Cover Letter" onClick={closeMenu} />
-      <NavLink href="/pricing" label="Pricing" onClick={closeMenu} />
-      <NavLink href="/contact" label="Contacts" onClick={closeMenu} />
-      {isAdmin && <NavLink href="/admin" label="Dashboard" onClick={closeMenu} />}
+      <NavLink href="/services" label="Services" onClick={closeMenu} />
+      <NavLink href="/services/coverletterwriting" label="Cover Letter" className="hover:border-lime-500" onClick={closeMenu} />
+      <NavLink href="/pricing" label="Pricing" onClick={closeMenu} className="hover:border-rose-500" />
+      <NavLink href="/contact" label="Contacts" onClick={closeMenu} className="hover:border-violet-500" />
     </>
-  ), [isAdmin, closeMenu]);
+  ), [closeMenu]);
 
   return (
-  <nav className="fixed max-w-screen-2xl w-full top-0 bg-cyan-100 text-cyan-700 py-4 px-4 sm:px-6 flex items-center justify-between z-50 shadow-md overflow-hidden">
+  <nav className="fixed max-w-screen-2xl w-full top-0 bg-cyan-50 text-cyan-700 py-4 px-4 sm:px-6 flex items-center justify-between shadow-md overflow-hidden z-50">
     {/* Logo and Brand */}
-    <Link href="/" className="flex grow items-center space-x-2 flex-shrink-0">
-      <Image src={logo} alt="Resumer Logo" height={50} width={50} loading="lazy" /> {/* Increase height/width for larger screens */}
-      <span className="text-pink-500 text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl font-bold hover:text-pink-600">
-        <span className="sm:text-2xl">R</span>esumer
-      </span>
+    <Link href="/" className="flex items-center space-x-2  transform transition-all duration-300 hover:scale-105 ease-in-out">
+      <Image src={logo} alt="Resumer Logo" height={50} width={50} loading="lazy" />
+      <div>
+        <h1 className="text-pink-500 text-center text-4xl lg:text-5xl font-bold">
+          <span className=" font-mono">R</span>esumer
+        </h1>
+      </div>
     </Link>
 
     {/* Center Links Container for Medium Screens */}
-    <div className="hidden md:flex md:justify-center md:space-x-4 lg:hidden">
+    <div className="hidden sm:flex sm:justify-center sm:space-x-2 lg:hidden">
       <NavLink href="/services" label="Services" onClick={closeMenu} />
-      {isAdmin && <NavLink href="/admin" label="Dashboard" onClick={closeMenu} />}
     </div>
 
     {/* Full Menu for Large Screens */}
-    <div className="hidden lg:flex lg:justify-center lg:space-x-4 xl:space-x-6 2xl:space-x-8 3xl:space-x-10">
+    <div className="hidden lg:flex lg:justify-center justify-between lg:space-x-2 xl:space-x-6 2xl:space-x-8 3xl:space-x-10">
       {renderLinks()}
     </div>
 
     {/* Menu Button for Small Screens */}
-    <div className="md:hidden flex items-center">
+    <div className="sm:hidden flex items-center text-pink-500">
       <button onClick={toggleMenu} className="focus:outline-none">
-        <div className="w-6 h-6 flex flex-col justify-between">
-          <div className={`h-1 w-full bg-pink-500 transform transition-transform ${menuOpen ? "rotate-45 translate-y-2.5" : ""}`} />
-          <div className={`h-1 w-full bg-pink-500 transition-opacity ${menuOpen ? "opacity-0" : ""}`} />
-          <div className={`h-1 w-full bg-pink-500 transform transition-transform ${menuOpen ? "-rotate-45 -translate-y-2.5" : ""}`} />
-        </div>
+          {!menuOpen ? <IoMenu /> : <IoClose />}
       </button>
     </div>
 
@@ -150,7 +161,7 @@ const NavBar: React.FC = () => {
     )}
 
     {/* Auth Actions for Larger Screens */}
-    <div className="hidden md:flex items-center space-x-2 sm:space-x-4 lg:space-x-6 xl:space-x-8 2xl:space-x-10">
+    <div className="hidden sm:flex itmes-center ml-4 gap-4 text-base lg:text-lg xl:text-xl">
       {authLinks}
     </div>
   </nav>

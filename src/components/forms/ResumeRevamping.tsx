@@ -139,7 +139,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
           <p className="text-lg font-semibold">Submitting...</p>
         </div>
       )}
-      <h2 className="text-2xl text-teal-800 font-semibold text-center mb-4">Resume Revamping</h2>
+      <h2 className="text-2xl text-fuchsia-800 font-semibold text-center mb-4">Resume Revamping</h2>
       <p className="mb-6 text-lg text-gray-600 text-center">
         Create a compelling resume that complements your career and boosts your chances of success.
       </p>

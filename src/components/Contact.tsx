@@ -57,11 +57,11 @@ const Contact: React.FC = () => {
                 <meta name="twitter:image" content="/images/contact-page.png" />
             </Head>
 
-            <main className="flex flex-col items-center">
+            <main className="contacts ">
                 <h1 className="text-center text-4xl sm:text-5xl lg:text-6xl text-fuchsia-800 font-extrabold mb-6 tracking-wide">
                     Contact Us
                 </h1>
-                <div className="flex flex-col lg:flex-row w-full max-w-5xl gap-8 lg:gap-12 justify-evenly items-start">
+                <div className="flex flex-col sm:flex-row w-full gap-8 lg:gap-12 justify-between items-center">
                     {/* Contact Info */}
                     <article className="flex flex-col w-full lg:w-2/5 space-y-6 p-6 bg-gradient-to-b from-teal-100 to-teal-50 rounded-lg shadow-lg">
                         <h2 className="text-center text-lg font-semibold text-fuchsia-800">
@@ -92,7 +92,7 @@ const Contact: React.FC = () => {
                     {/* Contact Form */}
                     <article className="w-full lg:w-3/5 bg-gradient-to-b from-teal-100 to-teal-50 rounded-lg shadow-lg">
                         {submitted ? (
-                            <div className="text-teal-800 text-lg text-center p-6">
+                            <div className="text-teal-800 text-lg text-center p-6 ">
                                 <p>Thank you for reaching out! We will get back to you shortly.</p>
                                 <button
                                     onClick={handleGoBack}
@@ -102,7 +102,7 @@ const Contact: React.FC = () => {
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="p-4 sm:p-6">
+                            <form onSubmit={handleSubmit} className="p-4 sm:py-6 sm:px-12">
                                 <h3 className="text-center text-lg sm:text-xl font-semibold text-fuchsia-800 mb-6">
                                     Get in Touch with Support
                                 </h3>
