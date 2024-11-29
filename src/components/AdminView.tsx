@@ -108,60 +108,50 @@ const AdminViewComponent = () => {
   
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="admin-view px-4 sm:px-6 lg:px-8 py-8 rounded-lg max-w-screen-lg w-full">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-cyan-900 text-center">
-          {view === 'available' ? 'Available Orders' : view === 'completed' ? 'Completed Orders' : 'Unpaid Orders'}
-        </h2>
-        <div className="flex justify-center space-x-4 mb-6">
+    <main>
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-cyan-900 text-center">
+        {view === 'available' ? 'Available Orders' : view === 'completed' ? 'Completed Orders' : 'Unpaid Orders'}
+      </h2>
+      <div className="flex justify-between text-lg md:text-xl xl:text-2xl space-x-2 lg:space-x-20 mb-6">
+        {(['available', 'completed', 'unpaid'] as const).map((type) => (
           <button
-            className={`py-2 px-4 rounded-lg border border-purple-600 text-purple-600 hover:bg-purple-400 hover:text-white transition-all duration-300 ${view === 'available' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800'}`}
-            onClick={() => handleViewChange('available')}
+            key={type}
+            className={`flex-1 p-2 text-center rounded-lg border border-purple-600 text-purple-600 transition-colors duration-300 ${
+              view === type ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-purple-400 hover:text-white'
+            }`}
+            onClick={() => handleViewChange(type)}
           >
-            Available Orders
+            {type.charAt(0).toUpperCase() + type.slice(1)} Orders
           </button>
-          <button
-            className={`py-2 px-4 rounded-lg border border-purple-600 text-purple-600 hover:bg-purple-400 hover:text-white transition-all duration-300 ${view === 'completed' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800'}`}
-            onClick={() => handleViewChange('completed')}
-          >
-            Completed Orders
-          </button>
-          <button
-            className={`py-2 px-4 rounded-lg border border-purple-600 text-purple-600 hover:bg-purple-400 hover:text-white transition-all duration-300 ${view === 'unpaid' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800'}`}
-            onClick={() => handleViewChange('unpaid')}
-          >
-            Unpaid Orders
-          </button>
-        </div>
-        <ul className="space-y-4">
-          {orders.length === 0 ? (
-            <p className="text-center text-gray-800">No orders available</p>
-          ) : (
-            orders.map((order, index) => (
-              <li key={index} className="bg-white p-4 rounded-lg shadow-md border border-gray-200 hover:border-cyan-500 transition-all duration-300">
-                <button
-                  onClick={() => handleOrderClick(order.orderId)}
-                  className="block w-full text-left"
-                >
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg sm:text-xl lg:text-xl font-semibold text-cyan-900">
-                      {order.serviceTitle.replace(/_/g, ' ').replace(/\b\w/g, (str) => str.toUpperCase()) }
-                    </h3>
-                    <p className="text-gray-600">{formatTimestamp(order.timestamp)}</p>
-                  </div>
-                  <p className="text-gray-800 mb-2">
-                    <strong>User:</strong> {userNames[order.userId] || 'Loading...'}
-                  </p>
-                  <p className="text-gray-800">
-                    <strong>Status:</strong> {order.status}
-                  </p>
-                </button>
-              </li>
-            ))
-          )}
-        </ul>
+        ))}
       </div>
-    </div>
+
+      <ul className="flex flex-col w-full space-y-4">
+        {orders.length === 0 ? ( <p className="text-gray-600">No orders available</p> ) : 
+        (
+          orders.map((order, index) => (
+            <li key={index} className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 rounded-lg shadow-md border border-gray-200 hover:border-cyan-500 transition-all duration-300">
+              <button
+                onClick={() => handleOrderClick(order.orderId)}
+                className="block w-full text-left"
+              >
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-cyan-800 mb-2 sm:mb-0">
+                    {order.serviceTitle.replace(/_/g, ' ').replace(/\b\w/g, str => str.toUpperCase())}
+                  </h3>
+                  <p className="text-sm sm:text-base lg:text-lg font-mono text-gray-600">
+                    {formatTimestamp(order.timestamp)}
+                  </p>
+                </div>
+                <p className="text-sm sm:text-base text-gray-800 mb-2">
+                  <strong className="font-semibold">Status:</strong> {order.status}
+                </p>
+              </button>
+            </li>
+          ))
+        )}
+      </ul>
+    </main>
   );
 };
 

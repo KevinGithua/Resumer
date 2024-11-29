@@ -100,9 +100,9 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
   }, [orderId, amount, phoneNumber, serviceTitle, userId, onError, pollPaymentStatus]);
 
   return (
-    <div className={`mpesa-button-container ${className} p-2 bg-white rounded-lg shadow-lg border border-gray-300`}>
+    <div className={`mpesa-button-container ${className} p-2 bg-gradient-to-t from-teal-50 to-teal-100 rounded-lg shadow-lg`}>
       <div className="mb-4">
-        <label htmlFor="phoneNumber" className="block text-gray-700 text-sm sm:text-base">
+        <label htmlFor="phoneNumber" className="block text-gray-700 text-lg lg:text-xl">
           For Mpesa enter Phone Number:
         </label>
         <input
@@ -116,7 +116,7 @@ const MpesaButton: React.FC<MpesaButtonProps> = ({
       </div>
       <button
         onClick={initiateMpesaPayment}
-        className={`bg-green-600 text-white py-2 px-4 rounded-md w-full flex items-center justify-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`bg-green-600 text-white py-2 px-4 rounded-full w-full flex items-center justify-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
         disabled={loading}
       >
         {loading ? 'Processing...' : 'Pay with M-Pesa'}

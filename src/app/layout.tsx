@@ -20,7 +20,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           {clientId ? (
             <PayPalScriptProvider options={{ clientId }}>
               <NavBar /> 
-              <main className=" max-w-screen-2xl ">
+              <main className=" max-w-screen-xl w-full ">
                 {children}
               </main>
               <Footer/>

@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { storage } from "@/lib/firebase"; // Ensure Firebase is imported here
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FaDollarSign } from 'react-icons/fa';
+import handleFileChange from '@/utils/orderUtils';
 
 type ResumeRevampingFormProps = {
   onSubmit: (formData: any) => void;
   loading: boolean;
   error: string | null;
   amount: number;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  formData: { [key: string]: any };
+  categories: string[];
+
 };
 
 type EducationEntry = {
@@ -36,45 +40,34 @@ type ReferenceEntry = {
   phone:string;
 };
 
-const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loading, error, amount }) => {
+const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, onChange, amount }) => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
-    resumeFileUrl: '',
+    resumeFile: '',
     additionalNotes: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("")
 
   const [education, setEducation] = useState<EducationEntry[]>([{ institution: '', degree: '', startYear: '', endYear: '' }]);
   const [experience, setExperience] = useState<ExperienceEntry[]>([{ company: '', title: '', startYear: '', endYear: '', description: '' }]);
   const [skills, setSkills] = useState<SkillsEntry[]>([{ skill: ''}]);
   const [references, setReferences] = useState<ReferenceEntry[]>([{ name: '', relationship: '', email: '' , phone:''}]);
 
-  const [fileUploadLoading, setFileUploadLoading] = useState(false);
-  const [fileUploadError, setFileUploadError] = useState<string | null>(null);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setFileUploadLoading(true);
-    setFileUploadError(null);
-
-    try {
-      const fileRef = storageRef(storage, `${file.name}`);
-      await uploadBytes(fileRef, file);
-      const fileUrl = await getDownloadURL(fileRef);
-      setFormData((prevData) => ({ ...prevData, resumeFileUrl: fileUrl }));
-    } catch (error) {
-      setFileUploadError("Failed to upload resume. Please try again.");
-    } finally {
-      setFileUploadLoading(false);
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    handleFileChange(e, {
+      storage,          // Your storage instance
+      setLoading,
+      setError,
+      setFormData,
+    });
   };
 
   const handleEducationChange = (index: number, field: keyof EducationEntry, value: string) => {
@@ -118,7 +111,7 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
 
     const structuredData = {
       contact: { fullName: formData.fullName, email: formData.email, phone: formData.phone },
-      resumeFileUrl: formData.resumeFileUrl,
+      resumeFile: formData.resumeFile,
       skills,
       education,
       experience,
@@ -153,12 +146,10 @@ const ResumeRevampingForm: React.FC<ResumeRevampingFormProps> = ({ onSubmit, loa
             name="resumeFile"
             id="resumeFile"
             accept=".pdf,.doc,.docx"
-            onChange={handleFileUpload}
+            onChange={handleChange}
             required
             className="w-full block sm:w-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 transition duration-200 cursor-pointer"
           />
-          {fileUploadLoading && <p className="mt-2 text-teal-600 text-sm">Uploading...</p>}
-          {fileUploadError && <p className="text-red-600 text-sm">{fileUploadError}</p>}
         </div>
     
         {/* Contact Information */}

@@ -20,7 +20,7 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
   onError,
 }) => {
   return (
-    <div className={`flex flex-col sm:flex-row sm:justify-center gap-4 p-4 bg-white rounded-lg`}>
+    <div className={`flex flex-col sm:flex-row sm:justify-center gap-4 p-4 rounded-lg`}>
       <PayPalButton
         amount={amount}
         orderId={orderId}
@@ -30,7 +30,7 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
         onError={onError}
       />
       <MpesaButton
-        amount={amount}
+        amount={amount * 100}
         orderId={orderId}
         serviceTitle={serviceTitle}
         userId={userId}

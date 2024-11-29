@@ -9,7 +9,6 @@ import {
   fetchOrderDetails,
   fetchUserDetails,
   uploadFile,
-  submitLink,
   updateOrder,
   Order,
   User,
@@ -23,6 +22,9 @@ import ResumeRevamping from "@/components/display/ResumeRevamping";
 import { FiDownload } from "react-icons/fi";
 import { FaUser, FaRegIdBadge, FaEnvelope, FaPhoneAlt, FaBox } from "react-icons/fa";
 import { onAuthStateChanged } from "firebase/auth";
+import CoverLetterDetails from "@/components/display/CoverLetter";
+import JobApplicationAssistance from "@/components/display/JobApplicationAssistance";
+import LinkedInProfileOptimization from "@/components/display/LinkedinProfileOptimization";
 
 
 const OrderDetails: React.FC = () => {
@@ -85,8 +87,8 @@ const OrderDetails: React.FC = () => {
     if (!file || !order) return;
     setLoading(true);
     try {
-      await uploadFile(file, order.orderId, order, database);
-      setOrder({ ...order, finishedWork: URL.createObjectURL(file), status: "Completed" });
+      await uploadFile(file, order, database);
+      setOrder({ ...order, finishedWork: URL.createObjectURL(file)});
     } catch (error) {
       console.error("Error uploading file:", error);
     } finally {
@@ -94,18 +96,22 @@ const OrderDetails: React.FC = () => {
     }
   };
 
-  const handleLinkSubmit = async () => {
-    if (link && order) {
-      setLoading(true);
-      try {
-        await submitLink(link, order, database);
-      } catch (error) {
-        console.error("Error submitting link:", error);
-      } finally {
-        setLoading(false);
-      }
+  const handleSubmitLink = async () => {
+    if (!order) return;
+    setLoading(true);
+    try {
+      await updateOrder(order, { finishedUrl: link,}, database);
+      setOrder((prevOrder) =>
+        prevOrder ? { ...prevOrder, finishedUrl: link } : prevOrder
+      );
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+
 
   const markAsCompleted = async () => {
     if (order ) {
@@ -131,43 +137,18 @@ const OrderDetails: React.FC = () => {
         return <ResumeWriting order={order} />;
       case "resume_revamping":
         return <ResumeRevamping order={order} />;
+      case "cover_letter_writing":
+        return <CoverLetterDetails order={order} />;
+      case "job_application_assistance":
+        return <JobApplicationAssistance order={order} />;
+      case "linkedin_profile_optimization":
+        return <LinkedInProfileOptimization order={order} />;
       default:
         return (
           <div className="bg-gradient-to-tr from-teal-50 to-teal-100 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
             <h3 className="text-xl font-semibold text-teal-800 mb-4 flex items-center justify-center">
-              Specific Order Details
+              No Specific Order Details
             </h3>
-            <div className="flex flex-col gap-4">
-              {Object.entries(order)
-                .filter(([key]) => ![
-                  "userUid", "serviceTitle", "orderId", "status", "price", "transactionId", "timestamp", "completed", "paymentStatus", "paymentMethod"
-                ].includes(key))
-                .map(([key, value]) => (
-                  <div key={key} className="sm:flex flex-col gap-2">
-                    <strong className="text-teal-700 text-sm font-semibold block">
-                      {key.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, str => str.toUpperCase())}
-                    </strong>
-                    {key.includes("resumeUpload") || key.includes("existingCoverLetter") || key.includes("existingResume") || key.includes("resumeFile")  && value ? (
-                      <div>
-                        {/* File Link */}
-                        <p className="sm:flex text-sm items-center gap-2">
-                          <a
-                            href={value}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-md transition-all duration-200 ease-in-out"
-                          >
-                            <span>{extractFilenameFromUrl(value)}</span>
-                            <FiDownload className="text-xl font-semibold" />
-                          </a>
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-gray-700 text-sm ">{value || "Not specified"}</p>
-                    )}
-                  </div>
-                ))}
-            </div>
           </div>
         );
     }
@@ -175,11 +156,11 @@ const OrderDetails: React.FC = () => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <main className="pt-20">
+      <main className="pt-20 flex flex-col items-center">
         <h2 className="text-lg sm:text-2xl font-bold mb-4">{order.serviceTitle.replace(/_/g, ' ').replace(/\b\w/g, (str) => str.toUpperCase()) }</h2>
         <div className="flex flex-col lg:flex-row lg:space-x-6">
           {/* Left Column */}
-          <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 sm:p-6 lg:p-8 rounded-lg shadow-md flex-1">
+          <div className="bg-gradient-to-t from-teal-50 to-teal-100 p-4 sm:p-6 lg:p-8 rounded-lg shadow-md flex-1">
             <div className="space-y-8">
               {/* User Information */}
               <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out max-w-full">
@@ -196,11 +177,11 @@ const OrderDetails: React.FC = () => {
                   ].map((item, index) => (
                     <p
                       key={index}
-                      className="text-sm flex items-center flex-wrap gap-x-2"
+                      className="text-sm lg:text-xl flex items-center flex-wrap gap-x-2"
                     >
                       <item.icon className="text-teal-800 mr-2" />
                       <span className="text-teal-800 font-semibold">{item.label}:</span>
-                      <span className="text-gray-700 truncate">{item.value}</span>
+                      <span className="text-gray-700 truncate font-mono">{item.value}</span>
                     </p>
                   ))}
                 </div>
@@ -222,10 +203,10 @@ const OrderDetails: React.FC = () => {
                   ].map((item, index) => (
                     <p
                       key={index}
-                      className="text-sm flex flex-wrap gap-x-2"
+                      className="text-sm lg:text-xl flex flex-wrap gap-x-2"
                     >
                       <span className="text-teal-800 font-semibold">{item.label}:</span>
-                      <span className="text-gray-700 break-words">{item.value}</span>
+                      <span className="text-gray-700 break-words font-mono">{item.value}</span>
                     </p>
                   ))}
                 </div>
@@ -236,21 +217,22 @@ const OrderDetails: React.FC = () => {
               {renderSpecificOrderDetails()}
 
               {/* Finished Work */}
-              {order.finishedWork && (
+              {(order.finishedWork || order.finishedUrl) && (
                 <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-4 rounded-md shadow-md hover:shadow-lg transition duration-200">
                   <h4 className="text-lg font-semibold text-gray-700">Finished Work</h4>
                   <a
-                    href={order.finishedWork}
+                    href={order.finishedWork || order.finishedUrl}  // Use whichever is available
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-teal-700 font-medium mt-2 hover:text-teal-600"
+                    className="flex items-center gap-4 text-sm font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-100 py-1 rounded-md transition-all duration-200 ease-in-out"
                     aria-label="Download finished work"
                   >
-                    <FiDownload className="text-teal-600" />
-                    {extractFilenameFromUrl(order.finishedWork)}
+                    {order.finishedWork ? extractFilenameFromUrl(order.finishedWork) : order.finishedUrl}
+                    <FiDownload className="text-lg" />
                   </a>
                 </div>
               )}
+
 
               {/* Conditional Upload/Link Section */}
               {order.paymentStatus === "pending" ? (
@@ -293,7 +275,7 @@ const OrderDetails: React.FC = () => {
                           <p className="text-gray-500 text-sm">Submitting...</p>
                         ) : (
                           <button
-                            onClick={handleLinkSubmit}
+                            onClick={handleSubmitLink}
                             className="bg-cyan-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-cyan-700 hover:shadow-lg transition duration-150"
                           >
                             Submit
@@ -304,7 +286,7 @@ const OrderDetails: React.FC = () => {
                   </div>
 
                   {/* Mark as Completed */}
-                  {isAdmin && (
+                  {isAdmin && (order.finishedUrl || order.finishedWork) && (
                     <button
                       onClick={markAsCompleted}
                       className="bg-teal-50 text-green-600 py-2 px-6 mt-6 rounded-lg shadow-md hover:bg-teal-100 hover:shadow-lg transition duration-200"

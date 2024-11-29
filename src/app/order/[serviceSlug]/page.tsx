@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { auth, db as database, storage } from "@/lib/firebase";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { ref, set, push } from "firebase/database";
 import ResumeWritingForm from "@/components/forms/ResumeWriting";
 import ResumeRevampingForm from "@/components/forms/ResumeRevamping";
 import CoverLetterWritingForm from "@/components/forms/CoverLetter";
 import LinkedInProfileOptimizationForm from "@/components/forms/LinkedInProfileOptimization";
 import JobApplicationAssistanceForm from "@/components/forms/JobApplicationAssistance";
+import handleFileChange from "@/utils/orderUtils";
 
 type OrderFormProps = {
   params: {
@@ -39,27 +39,14 @@ const OrderForm: React.FC<OrderFormProps> = ({ params }) => {
 
   const SelectedForm = formComponents[serviceSlug];
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, files } = e.target as HTMLInputElement;
-  
-    if (files && files[0]) {
-      const file = files[0];
-      const fileRef = storageRef(storage, `${file.name}`);
-  
-      try {
-        setLoading(true);
-        await uploadBytes(fileRef, file);
-        const fileUrl = await getDownloadURL(fileRef);
-        setFormData((prev) => ({ ...prev, [name]: fileUrl }));
-      } catch (uploadError) {
-        setError("Error uploading file. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    handleFileChange(e, {
+      storage,          // Your storage instance
+      setLoading,
+      setError,
+      setFormData,
+    });
+  };
 
   const handleSubmit = async (formData: any) => {
     if (auth.currentUser) {
@@ -104,6 +91,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ params }) => {
         amount={amount}
         loading={loading}
         error={error}
+        setFormData={setFormData}
       />
     </main>
   );

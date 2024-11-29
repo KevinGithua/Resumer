@@ -11,10 +11,10 @@ const ResumeWritingDetails: React.FC<ResumeWritingDetailsProps> = ({ order }) =>
     <div className="bg-gradient-to-br from-teal-50 to-teal-100 p-8 rounded-xl shadow-lg">
       <h3 className="text-2xl font-bold text-teal-800 mb-4 text-center">Resume Writing Details</h3>
 
-      <div className="flex flex-col gap-4 text-base">
+      <div className="flex flex-col gap-4 text-base lg:text-xl">
         {/* Contact Information */}
         <div>
-          <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
+          <h4 className="flex items-center gap-2 text-xl  font-semibold text-teal-700">
             <FiUser className="text-teal-500" /> Contact Information
           </h4>
           <div><strong className="text-gray-600">Full Name:</strong> {order.contact.fullName || "Not specified"}</div>
@@ -24,7 +24,7 @@ const ResumeWritingDetails: React.FC<ResumeWritingDetailsProps> = ({ order }) =>
 
         {/* Education Information */}
         <div>
-          <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
+          <h4 className="flex items-center gap-2 text-xl font-semibold text-teal-700">
             <FiBookOpen className="text-teal-500" /> Education
           </h4>
           {order.education.length > 0 ? (
@@ -43,7 +43,7 @@ const ResumeWritingDetails: React.FC<ResumeWritingDetailsProps> = ({ order }) =>
 
         {/* Experience Information */}
         <div>
-          <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
+          <h4 className="flex items-center gap-2 text-xl font-semibold text-teal-700">
             <FiBriefcase className="text-teal-500" /> Experience
           </h4>
           {order.experience.length > 0 ? (
@@ -63,7 +63,7 @@ const ResumeWritingDetails: React.FC<ResumeWritingDetailsProps> = ({ order }) =>
 
         {/* Skills Information */}
         <div>
-          <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
+          <h4 className="flex items-center gap-2 text-xl font-semibold text-teal-700">
             <FiStar className="text-teal-500" /> Skills
           </h4>
           {order.skills.length > 0 ? (
@@ -79,7 +79,7 @@ const ResumeWritingDetails: React.FC<ResumeWritingDetailsProps> = ({ order }) =>
 
         {/* References Information */}
         <div>
-          <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
+          <h4 className="flex items-center gap-2 text-xl font-semibold text-teal-700">
             <FiUser className="text-teal-500" /> References
           </h4>
           {order.references.length > 0 ? (
@@ -98,7 +98,7 @@ const ResumeWritingDetails: React.FC<ResumeWritingDetailsProps> = ({ order }) =>
 
         {/* Additional Notes */}
         <div>
-          <h4 className="flex items-center gap-2 text-lg font-semibold text-teal-700">
+          <h4 className="flex items-center gap-2 text-xl font-semibold text-teal-700">
             <FiBookOpen className="text-teal-500" /> Additional Notes
           </h4>
           <div>{order.additionalNotes || <span className="italic text-gray-500">No additional notes</span>}</div>

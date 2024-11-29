@@ -106,14 +106,15 @@ const JobApplicationAssistanceForm: React.FC<JobApplicationAssistanceFormProps> 
   
         {/* Upload Resume */}
         <div>
-          <label htmlFor="resumeUpload" className="block text-teal-700 font-medium mb-2">
+          <label htmlFor="resumeFile" className="block text-teal-700 font-medium mb-2">
             Upload Resume
           </label>
           <input
             type="file"
-            id="resumeUpload"
-            name="resumeUpload"
+            id="resumeFile"
+            name="resumeFile"
             onChange={onChange}
+            accept=".pdf,.doc,.docx"
             required
             className="w-full block sm:w-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 transition duration-200 cursor-pointer"
           />

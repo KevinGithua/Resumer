@@ -55,7 +55,7 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
   };
 
   return (
-    <div className={`paypall-button-container ${className} p-2 border border-gray-300 rounded-lg shadow-md flex items-center justify-center`}>
+    <div className={`paypall-button-container ${className} p-2 bg-gradient-to-t from-teal-50 to-teal-100 text-lg lg:text-xl rounded-lg shadow-md flex items-center justify-center`}>
       {isPending && <div className="text-gray-500 text-center">Loading PayPal buttons...</div>}
       {isRejected && (
         <div className="text-red-600 text-center">

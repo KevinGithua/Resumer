@@ -11,9 +11,13 @@ export type Order = {
   userUid: string;
   timestamp: string;
   status: string;
-  finishedWork?: string;
+  finishedWork: string;
+  finishedUrl: string;
   completed: boolean;
   paymentStatus: string;
+  pricingCategories: string;
+  additionalNotes: string;
+  resumeFile: string;
 
   // New fields for Resume Revamping
   contact: {
@@ -43,8 +47,10 @@ export type Order = {
     email: string;
     phone: string;
   }[];
-  additionalNotes: string;
-  resumeFile: File | null;
+
+  companyApplyingTo: string;
+  jobApplyingFor: string;
+
   // Optional for flexibility
   [key: string]: any;
 };
@@ -55,20 +61,45 @@ export type User = {
   phoneNumber: string;
 };
 
-// Extract filename from a URL or File object with enhanced style
-export const extractFilenameFromUrl = (file: File | string | null): string => {
-  if (!file) return "No file provided";
 
-  let filename = "";
-  
-  if (typeof file === "string") {
-    // Decode URL-encoded string (e.g., %20 -> space)
-    filename = decodeURIComponent(file.split('/').pop()?.split('?')[0] || "No file provided");
+type HandleChangeParams = {
+  storage: any; // Adjust type according to your storage instance type
+  setLoading: (loading: boolean) => void;
+  setError: (error: string) => void;
+  setFormData: (updateFunc: (prev: any) => any) => void; // Update 'any' based on your form data type
+};
+
+const handleFileChange = async (
+e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+params: HandleChangeParams ) => {
+  const { storage, setLoading, setError, setFormData } = params;
+  const { name, value, files } = e.target as HTMLInputElement;
+
+  if (files && files[0]) {
+    const file = files[0];
+    const fileRef = storageRef(storage, `${file.name}`);
+
+    try {
+      setLoading(true);
+      await uploadBytes(fileRef, file);
+      const fileUrl = await getDownloadURL(fileRef);
+      setFormData((prev) => ({ ...prev, [name]: fileUrl }));
+    } catch (uploadError) {
+      setError("Error uploading file. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   } else {
-    // If it's a File object, directly extract the name
-    filename = file.name;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
+};
 
+export default handleFileChange;
+
+
+// Extract filename from a URL or File object with enhanced style
+export const extractFilenameFromUrl = (file: string ): string => {
+  const filename = decodeURIComponent(file.split('/').pop()?.split('?')[0] || "No file provided");
   return filename;
 };
 
@@ -123,21 +154,24 @@ export const updateOrder = async (order: Order, updates: Partial<Order>, databas
 };
 
 // Upload file to storage and update order
-export const uploadFile = async (file: File, orderId: string, order: Order, database: any) => {
-  const fileStorageRef = storageRef(storage, `orders/${orderId}/${file.name}`);
+export const uploadFile = async (file: File, order: Order, database: any) => {
+  const fileStorageRef = storageRef(storage, `${file.name}`);
   await uploadBytes(fileStorageRef, file);
   const downloadURL = await getDownloadURL(fileStorageRef);
-  await updateOrder(order, { finishedWork: downloadURL, status: "Completed" }, database);
+  await updateOrder(order, { finishedWork: downloadURL,}, database);
 };
 
 // Submit a link for the order
 export const submitLink = async (link: string, order: Order, database: any) => {
-  await updateOrder(order, { finishedWork: link }, database);
+  await updateOrder(order, { finishedWork: link,}, database);
 };
 
 // Format timestamp for display
 export const formatTimestamp = (timestamp: string) => {
   if (!timestamp || timestamp === "No Date Provided") return "No Date Provided";
   const date = new Date(timestamp);
-  return date.toLocaleString();
+  return date.toLocaleString(undefined, {  // 'undefined' uses the user's locale
+    dateStyle: "medium",
+    timeStyle: "short"
+  });
 };
